@@ -1,11 +1,11 @@
-Graphics Boilerplate Code
+Graphics Assignment 2
 =========================
+Dheeraj Reddy Pailla, 20161053
 
-This is boilerplate code for the assignments which might be helpful.
-
+Controls:
 
 License
 -------
-The MIT License https://meghprkh.mit-license.org/
+The MIT License
 
-Copyright &copy; 2018 Megh Parikh <meghprkh@gmail.com>
+Copyright &copy; 2018 Dheeraj Reddy Pailla <dheerajpreddy@gmail.com>
