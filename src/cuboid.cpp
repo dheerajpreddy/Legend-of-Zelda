@@ -7,7 +7,7 @@ Cuboid::Cuboid(float x, float y, float z, float l, float b, float h, color_t col
     this->speed = 1;
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-    static const GLfloat vertex_buffer_data[] = {
+    const GLfloat vertex_buffer_data[] = {
         -l,-b,-h, // triangle 1 : begin
         -l,-b, h,
         -l, b, h, // triangle 1 : end
