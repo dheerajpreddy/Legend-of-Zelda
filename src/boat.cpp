@@ -3,6 +3,8 @@
 #include "sail.h"
 #include "main.h"
 
+unsigned long long bouncer = 0;
+
 Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) {
     this->set_position(x, y, z);
     this->set_rotation(0);
@@ -52,6 +54,7 @@ void Boat::update_position(float x, float y, float z) {
 
 void Boat::tick() {
     // this->rotation += speed;
+    this->update_position(0, 0.05*cos((bouncer++)/8), 0);
     this->position.x -= this->speed.x;
     this->position.y += this->speed.y;
     this->position.z += this->speed.z;

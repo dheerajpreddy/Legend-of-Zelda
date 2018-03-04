@@ -23,7 +23,7 @@ Camera cam;
 Timer t60(1.0 / 60);
 
 // iterator for bouncing cosine for the boat
-unsigned long long bouncer = 0;
+// unsigned long long bouncer = 0;
 
 // Declaring camera angle views
 extern int camView;
@@ -48,7 +48,9 @@ void draw() {
 
     ocean.draw(VP);
     boat.draw(VP);
-    rocks[0].draw(VP);
+    for(int i=0; i<100; i++) {
+      rocks[i].draw(VP);
+    }
 }
 
 void tick_input(GLFWwindow *window) {
@@ -59,7 +61,10 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ocean.tick();
     boat.tick();
-    boat.update_position(0, 0.05*cos((bouncer++)/8), 0);
+    for(int i=0; i<100; i++) {
+      rocks[i].tick();
+    }
+    // boat.update_position(0, 0.05*cos((bouncer++)/8), 0);
     // camera_rotation_angle += 0.1;
 }
 
@@ -73,7 +78,10 @@ void initGL(GLFWwindow *window, int width, int height) {
     cam = Camera(eye, target, up);
     ocean       = Cuboid(0.0, 0.0, 0.0, 1000.0, 2.0, 1000.0, COLOR_OCEAN_BLUE);
     boat       = Boat(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_RED);
-    rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
+    for (int i = 0; i < 100; i++) {
+        rocks[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.5, 0.5, 0.5, COLOR_BLACK);
+    }
+    // rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform
