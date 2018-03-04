@@ -25,7 +25,7 @@ Timer t60(1.0 / 60);
 unsigned long long bouncer = 0;
 
 // Declaring camera angle views
-int camView = 0;
+int camView = 1;
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
