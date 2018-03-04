@@ -68,37 +68,22 @@ void draw() {
 }
 
 void moveBoat() {
-  int left  = glfwGetKey(window, GLFW_KEY_LEFT);
-  int right = glfwGetKey(window, GLFW_KEY_RIGHT);
-  int up = glfwGetKey(window, GLFW_KEY_UP);
-  int down = glfwGetKey(window, GLFW_KEY_DOWN);
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN);
   if (up) {
-      boat.update_position(-0.1, 0, 0);
-      if(camView == 0){             // Follow view, default view
-        cam.update_eye(-0.1, 0, 0);
-        // .x -= 0.1;
-        cam.update_target(-0.1, 0, 0);
-        // .x -=0.1;
-      }
+    boat.update_position(-0.1*cos(boat.rotation*M_PI/180.0f), 0, 0.1*sin(boat.rotation * M_PI / 180.0f));
   }
   else if (down) {
-      boat.update_position(0.1, 0, 0);
-      if(camView == 0){             //Follow view, default view
-        cam.update_eye(0.1, 0, 0);
-        cam.update_target(0.1, 0, 0);
-        // eye.x += 0.1;
-        // target.x += 0.1;
-      }
+    boat.update_position(0.1*cos(boat.rotation*M_PI/180.0f), 0, -0.1*sin(boat.rotation * M_PI / 180.0f));
   } else if (left) {
-    
+    boat.update_rotation(1.0);
   } else if (right) {
-
+    boat.update_rotation(-1.0);
   }
-
 }
 
 void tick_input(GLFWwindow *window) {
-    moveBoat();     // Moves boats and updates camera position as well
+    moveBoat();                 // Moves boat
+    cam.update(boat, camView);  // Updates camera based on camView
 }
 
 void tick_elements() {

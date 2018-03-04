@@ -1,4 +1,5 @@
 #include "main.h"
+#include "cuboid.h"
 
 #ifndef CAMERA_H
 #define CAMERA_H
@@ -15,6 +16,7 @@ public:
     void update_eye(float x, float y, float z);
     void update_target(float x, float y, float z);
     void update_up(float x, float y, float z);
+    void update(Cuboid boat, int camView);
 private:
     VAO *object;
 };

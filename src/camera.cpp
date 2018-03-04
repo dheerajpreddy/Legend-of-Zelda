@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "main.h"
+#include "cuboid.h"
 
 Camera::Camera(glm::vec3 eye, glm::vec3 target, glm::vec3 up) {
     this->eye = eye;
@@ -25,4 +26,21 @@ void Camera::update_target(float x, float y, float z) {
 }
 void Camera::update_up(float x, float y, float z) {
     this->up += glm::vec3(x, y, z);
+}
+
+void Camera::update(Cuboid boat, int camView) {
+    if(camView == 0) {
+      // Follow view
+      this->set_up(0, 1, 0);
+      this->set_target(boat.position.x, this->target.y, boat.position.z);
+      this->set_eye(boat.position.x + 10*cos(boat.rotation * M_PI / 180.0f), 7, boat.position.z - 10*sin(boat.rotation * M_PI / 180.0f));
+    } else if (camView == 1) {
+
+    } else if (camView == 2) {
+
+    } else if (camView == 3) {
+
+    } else if (camView == 4) {
+      camView = 1;
+    }
 }
