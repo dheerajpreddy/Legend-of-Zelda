@@ -1,55 +1,42 @@
-#include "cuboid.h"
+#include "sail.h"
 #include "main.h"
 
-Cuboid::Cuboid(float x, float y, float z, float l, float b, float h, color_t color) {
+Sail::Sail(float x, float y, float z, float h, float b, float w, color_t color) {
     this->set_position(x, y, z);
     this->set_rotation(0);
     this->set_speed(0, 0, 0);
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     const GLfloat vertex_buffer_data[] = {
-        -l,-b,-h, // triangle 1 : begin
-        -l,-b, h,
-        -l, b, h, // triangle 1 : end
-        l, b,-h, // triangle 2 : begin
-        -l,-b,-h,
-        -l, b,-h, // triangle 2 : end
-        l,-b, h,
-        -l,-b,-h,
-        l,-b,-h,
-        l, b,-h,
-        l,-b,-h,
-        -l,-b,-h,
-        -l,-b,-h,
-        -l, b, h,
-        -l, b,-h,
-        l,-b, h,
-        -l,-b, h,
-        -l,-b,-h,
-        -l, b, h,
-        -l,-b, h,
-        l,-b, h,
-        l, b, h,
-        l,-b,-h,
-        l, b,-h,
-        l,-b,-h,
-        l, b, h,
-        l,-b, h,
-        l, b, h,
-        l, b,-h,
-        -l, b,-h,
-        l, b, h,
-        -l, b,-h,
-        -l, b, h,
-        l, b, h,
-        -l, b, h,
-        l,-b, h
+       w,  h/2,  0,
+       w, -h/2, -b/2,
+       w, -h/2,  0,
+
+       0,  h/2,  0,
+       0, -h/2, -b/2,
+       0, -h/2,  b/2,
+
+       w, -h/2, -b/2,
+       0, -h/2, -b/2,
+       w, h/2, 0,
+
+       0, h/2, 0,
+       0, -h/2, -b/2,
+       w, h/2, 0,
+
+       w, -h/2, b/2,
+       0, -h/2, b/2,
+       w, h/2, 0,
+
+       0, h/2, 0,
+       0, -h/2, b/2,
+       w, h/2, 0,
     };
 
-    this->object = create3DObject(GL_TRIANGLES, 12*3, vertex_buffer_data, color, GL_FILL);
+    this->object = create3DObject(GL_TRIANGLES, 6*3, vertex_buffer_data, color, GL_FILL);
 }
 
-void Cuboid::draw(glm::mat4 VP) {
+void Sail::draw(glm::mat4 VP) {
     Matrices.model = glm::mat4(1.0f);
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), glm::vec3(0, 1, 0));
@@ -61,37 +48,37 @@ void Cuboid::draw(glm::mat4 VP) {
     draw3DObject(this->object);
 }
 
-void Cuboid::set_speed(float x, float y, float z) {
+void Sail::set_speed(float x, float y, float z) {
   this->speed = glm::vec3(x, y, z);
 }
 
-void Cuboid::update_speed(float x, float y, float z) {
+void Sail::update_speed(float x, float y, float z) {
   this->speed += glm::vec3(x, y, z);
 }
 
-void Cuboid::set_position(float x, float y, float z) {
+void Sail::set_position(float x, float y, float z) {
     this->position = glm::vec3(x, y, z);
 }
 
-void Cuboid::set_rotation(float x) {
+void Sail::set_rotation(float x) {
     this->rotation = x;
 }
 
-void Cuboid::update_rotation(float x) {
+void Sail::update_rotation(float x) {
     this->rotation += x;
 }
 
-void Cuboid::update_position(float x, float y, float z) {
+void Sail::update_position(float x, float y, float z) {
     this->position += glm::vec3(x, y, z);
 }
 
-void Cuboid::tick() {
+void Sail::tick() {
     // this->rotation += speed;
     this->position.x -= this->speed.x;
     this->position.y += this->speed.y;
 }
 
-void Cuboid::move(GLFWwindow *window) {
+void Sail::move(GLFWwindow *window) {
   int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
   if (up) {
     this->update_position(-0.1*cos(this->rotation*M_PI/180.0f), 0, 0.1*sin(this->rotation * M_PI / 180.0f));
@@ -110,5 +97,4 @@ void Cuboid::move(GLFWwindow *window) {
   if (this->position.y > 3.15) {
     this->update_position(0, -0.15, 0);
   }
-
 }

@@ -1,13 +1,13 @@
 #include "main.h"
 
-#ifndef CUBOID_H
-#define CUBOID_H
+#ifndef SAIL_H
+#define SAIL_H
 
 
-class Cuboid {
+class Sail {
 public:
-    Cuboid() {}
-    Cuboid(float x, float y, float z, float l, float b, float h, color_t color);
+    Sail() {}
+    Sail(float x, float y, float z, float l, float b, float h, color_t color);
     glm::vec3 position;
     glm::vec3 speed;
     float rotation;
@@ -24,4 +24,4 @@ private:
     VAO *object;
 };
 
-#endif // CUBOID_H
+#endif // SAIL_H

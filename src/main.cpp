@@ -2,6 +2,7 @@
 #include "timer.h"
 #include "cuboid.h"
 #include "camera.h"
+#include "boat.h"
 
 using namespace std;
 
@@ -13,11 +14,11 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
-Cuboid ocean, boat, rocks[100];
+Cuboid ocean, rocks[100];
+Boat boat;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
-// glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
 Camera cam;
 Timer t60(1.0 / 60);
 
@@ -26,6 +27,10 @@ unsigned long long bouncer = 0;
 
 // Declaring camera angle views
 extern int camView;
+
+float randomGen(float min, float max) {
+  return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
+}
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -36,32 +41,11 @@ void draw() {
     // use the loaded shader program
     // Don't change unless you know what you are doing
     glUseProgram (programID);
-
-    // Eye - Location of camera. Don't change unless you are sure!!
-    // glm::vec3 eye ( 5*cos(camera_rotation_angle*M_PI/180.0f), 0, 5*sin(camera_rotation_angle*M_PI/180.0f) );
-    // eye = glm::vec3 ( 6, 5, 0 );
-    // cout<<eye.x;
-    // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    // target = glm::vec3(0, 0, 0);
-    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
-    // up = glm::vec3(0, 1, 0);
-
-    // Compute Camera matrix (view)
     Matrices.view = glm::lookAt( cam.eye, cam.target, cam.up ); // Rotating cam for 3D
-    // Don't change unless you are sure!!
-    // Matrices.view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); // Fixed camera for 2D (ortho) in XY plane
-
-    // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
-    // Don't change unless you are sure!!
     glm::mat4 VP = Matrices.projection * Matrices.view;
 
-    // Send our transformation to the currently bound shader, in the "MVP" uniform
-    // For each model you render, since the MVP will be different (at least the M part)
-    // Don't change unless you are sure!!
     glm::mat4 MVP;  // MVP = Projection * View * Model
 
-    // Scene render
-    // boat.draw(VP);
     ocean.draw(VP);
     boat.draw(VP);
     rocks[0].draw(VP);
@@ -88,8 +72,8 @@ void initGL(GLFWwindow *window, int width, int height) {
     glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
     cam = Camera(eye, target, up);
     ocean       = Cuboid(0.0, 0.0, 0.0, 1000.0, 2.0, 1000.0, COLOR_OCEAN_BLUE);
-    boat       = Cuboid(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_BLACK);
-    rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_RED);
+    boat       = Boat(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_RED);
+    rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform
@@ -143,10 +127,11 @@ int main(int argc, char **argv) {
     quit(window);
 }
 
-bool detect_collision(bounding_box_t a, bounding_box_t b) {
-    return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
-           (abs(a.y - b.y) * 2 < (a.height + b.height));
-}
+// bool detect_collision(bounding_box_t a, bounding_box_t b) {
+//     return (abs(a.x - b.x) * 2 < (a.length + b.length)) &&
+//            (abs(a.y - b.y) * 2 < (a.height + b.height)) &&
+//            (abs(a.z - b.z) * 2 < (a.width + b.width));
+// }
 
 void reset_screen() {
     float top    = screen_center_y + 4 / screen_zoom;
@@ -154,5 +139,5 @@ void reset_screen() {
     float left   = screen_center_x - 4 / screen_zoom;
     float right  = screen_center_x + 4 / screen_zoom;
     // Matrices.projection = glm::ortho(left, right, bottom, top, 0.1f, 500.0f);
-    Matrices.projection = glm::perspective(1.57f, 1.0f, 0.1f, 100.0f);
+    Matrices.projection = glm::perspective(1.57f, (float)(900/900), 0.01f, 500.0f);
 }

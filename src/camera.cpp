@@ -28,7 +28,7 @@ void Camera::update_up(float x, float y, float z) {
     this->up += glm::vec3(x, y, z);
 }
 
-void Camera::update(Cuboid boat, int camView) {
+void Camera::update(Boat boat, int camView) {
     if(camView == 0) {
       // Follow view
       this->set_up(0, 1, 0);
