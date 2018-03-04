@@ -65,6 +65,10 @@ void Cuboid::set_position(float x, float y, float z) {
     this->position = glm::vec3(x, y, z);
 }
 
+void Cuboid::update_position(float x, float y, float z) {
+    this->position += glm::vec3(x, y, z);
+}
+
 void Cuboid::tick() {
     // this->rotation += speed;
     // this->position.x -= speed;

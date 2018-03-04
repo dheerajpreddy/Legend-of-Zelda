@@ -12,12 +12,15 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
-Cuboid ocean, boat;
+Cuboid ocean, boat, rocks[100];
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
-glm::vec3 eye ( 6, 5, 0 ), target (0, 0, 0), up (0, 1, 0);
+glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
 Timer t60(1.0 / 60);
+
+// iterator for bouncing cosine for the boat
+unsigned long long bouncer = 0;
 
 // Declaring camera angle views
 bool boatView=false, topView=false, towerView=false, followView=false, heliView=false;
@@ -59,6 +62,7 @@ void draw() {
     // boat.draw(VP);
     ocean.draw(VP);
     boat.draw(VP);
+    rocks[0].draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
@@ -84,6 +88,8 @@ void tick_input(GLFWwindow *window) {
 
 void tick_elements() {
     ocean.tick();
+    boat.tick();
+    boat.update_position(0, 0.05*cos((bouncer++)/8), 0);
     // camera_rotation_angle += 0.1;
 }
 
@@ -94,7 +100,8 @@ void initGL(GLFWwindow *window, int width, int height) {
     // Create the models
 
     ocean       = Cuboid(0.0, 0.0, 0.0, 100.0, 2.0, 100.0, COLOR_OCEAN_BLUE);
-    boat       = Cuboid(0.0, 3.0, 0.0, 1.0, 1.0, 1.0, COLOR_RED);
+    boat       = Cuboid(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_BLACK);
+    rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_RED);
     followView = true;
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
