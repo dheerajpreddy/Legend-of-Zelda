@@ -1,6 +1,7 @@
 #include "main.h"
 #include "timer.h"
 #include "cuboid.h"
+#include "camera.h"
 
 using namespace std;
 
@@ -16,14 +17,15 @@ Cuboid ocean, boat, rocks[100];
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
-glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
+// glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
+Camera cam;
 Timer t60(1.0 / 60);
 
 // iterator for bouncing cosine for the boat
 unsigned long long bouncer = 0;
 
 // Declaring camera angle views
-bool boatView=false, topView=false, towerView=false, followView=false, heliView=false;
+int camView = 0;
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -45,7 +47,7 @@ void draw() {
     // up = glm::vec3(0, 1, 0);
 
     // Compute Camera matrix (view)
-    Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
+    Matrices.view = glm::lookAt( cam.eye, cam.target, cam.up ); // Rotating cam for 3D
     // Don't change unless you are sure!!
     // Matrices.view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); // Fixed camera for 2D (ortho) in XY plane
 
@@ -65,25 +67,38 @@ void draw() {
     rocks[0].draw(VP);
 }
 
+void moveBoat() {
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT);
+  int right = glfwGetKey(window, GLFW_KEY_RIGHT);
+  int up = glfwGetKey(window, GLFW_KEY_UP);
+  int down = glfwGetKey(window, GLFW_KEY_DOWN);
+  if (up) {
+      boat.update_position(-0.1, 0, 0);
+      if(camView == 0){             // Follow view, default view
+        cam.update_eye(-0.1, 0, 0);
+        // .x -= 0.1;
+        cam.update_target(-0.1, 0, 0);
+        // .x -=0.1;
+      }
+  }
+  else if (down) {
+      boat.update_position(0.1, 0, 0);
+      if(camView == 0){             //Follow view, default view
+        cam.update_eye(0.1, 0, 0);
+        cam.update_target(0.1, 0, 0);
+        // eye.x += 0.1;
+        // target.x += 0.1;
+      }
+  } else if (left) {
+    
+  } else if (right) {
+
+  }
+
+}
+
 void tick_input(GLFWwindow *window) {
-    int left  = glfwGetKey(window, GLFW_KEY_LEFT);
-    int right = glfwGetKey(window, GLFW_KEY_RIGHT);
-    int up = glfwGetKey(window, GLFW_KEY_UP);
-    int down = glfwGetKey(window, GLFW_KEY_DOWN);
-    if (up) {
-        boat.position.x -= 0.1;
-        if(followView){
-          eye.x -= 0.1;
-          target.x -=0.1;
-        }
-    }
-    if (down) {
-        boat.position.x += 0.1;
-        if(followView){
-          eye.x += 0.1;
-          target.x += 0.1;
-        }
-    }
+    moveBoat();     // Moves boats and updates camera position as well
 }
 
 void tick_elements() {
@@ -99,10 +114,11 @@ void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
 
+    glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
+    cam = Camera(eye, target, up);
     ocean       = Cuboid(0.0, 0.0, 0.0, 100.0, 2.0, 100.0, COLOR_OCEAN_BLUE);
     boat       = Cuboid(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_BLACK);
     rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_RED);
-    followView = true;
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform
