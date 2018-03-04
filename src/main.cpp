@@ -25,7 +25,7 @@ Timer t60(1.0 / 60);
 unsigned long long bouncer = 0;
 
 // Declaring camera angle views
-int camView = 2;
+int camView = 3;
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -101,7 +101,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
     glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
     cam = Camera(eye, target, up);
-    ocean       = Cuboid(0.0, 0.0, 0.0, 100.0, 2.0, 100.0, COLOR_OCEAN_BLUE);
+    ocean       = Cuboid(0.0, 0.0, 0.0, 1000.0, 2.0, 1000.0, COLOR_OCEAN_BLUE);
     boat       = Cuboid(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_BLACK);
     rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_RED);
     // Create and compile our GLSL program from the shaders

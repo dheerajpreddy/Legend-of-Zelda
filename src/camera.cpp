@@ -44,13 +44,11 @@ void Camera::update(Cuboid boat, int camView) {
       this->set_eye(boat.position.x, boat.position.y + 20, boat.position.z);
       this->set_target(boat.position.x, boat.position.y, boat.position.z);
       this->set_up(-cos(boat.rotation * M_PI / 180.0f), this->up.y, sin(boat.rotation * M_PI / 180.0f));
-
-      // eye = boat.position + glm::vec3(0, 20, 0);
-      // target = boat.position;
-      // up.x = -cos(boat.rotation * M_PI / 180.0f);
-      // up.z = sin(boat.rotation * M_PI / 180.0f);
     } else if (camView == 3) {
-
+      // Tower view
+      this->set_up(0, 1, 0);
+      this->set_target(boat.position.x, this->target.y, boat.position.z);
+      this->set_eye(-10, 40, 10);
     } else if (camView == 4) {
       camView = 1;
     }
