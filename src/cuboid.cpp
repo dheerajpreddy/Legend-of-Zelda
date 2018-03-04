@@ -91,3 +91,25 @@ void Cuboid::tick() {
     this->position.x -= this->speed.x;
     this->position.y += this->speed.y;
 }
+
+void Cuboid::move(GLFWwindow *window) {
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
+  if (up) {
+    this->update_position(-0.1*cos(this->rotation*M_PI/180.0f), 0, 0.1*sin(this->rotation * M_PI / 180.0f));
+  }
+  else if (down) {
+    this->update_position(0.1*cos(this->rotation*M_PI/180.0f), 0, -0.1*sin(this->rotation * M_PI / 180.0f));
+  }
+  if (left) {
+    this->update_rotation(1.0);
+  } else if (right) {
+    this->update_rotation(-1.0);
+  }
+  if (space && this->position.y < 3.15) {
+    this->update_position(0, 7.0, 0);
+  }
+  if (this->position.y > 3.15) {
+    this->update_position(0, -0.15, 0);
+  }
+
+}

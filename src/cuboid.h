@@ -18,6 +18,7 @@ public:
     void set_speed(float x, float y);
     void update_speed(float x, float y);
     void tick();
+    void move(GLFWwindow *window);
     glm::vec2 speed;
 private:
     VAO *object;

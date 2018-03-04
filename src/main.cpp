@@ -67,29 +67,8 @@ void draw() {
     rocks[0].draw(VP);
 }
 
-void moveBoat() {
-  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
-  if (up) {
-    boat.update_position(-0.1*cos(boat.rotation*M_PI/180.0f), 0, 0.1*sin(boat.rotation * M_PI / 180.0f));
-  }
-  else if (down) {
-    boat.update_position(0.1*cos(boat.rotation*M_PI/180.0f), 0, -0.1*sin(boat.rotation * M_PI / 180.0f));
-  } else if (left) {
-    boat.update_rotation(1.0);
-  } else if (right) {
-    boat.update_rotation(-1.0);
-  }
-  if (space && boat.position.y < 3.15) {
-    boat.update_position(0, 7.0, 0);
-  }
-  if (boat.position.y > 3.15) {
-    boat.update_position(0, -0.15, 0);
-  }
-
-}
-
 void tick_input(GLFWwindow *window) {
-    moveBoat();                 // Moves boat
+    boat.move(window);                 // Moves boat
     cam.update(boat, camView);  // Updates camera based on camView
 }
 
