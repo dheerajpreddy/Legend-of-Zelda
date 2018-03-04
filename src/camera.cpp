@@ -38,7 +38,7 @@ void Camera::update(Cuboid boat, int camView) {
       // First person view
       this->set_up(0, 1, 0);
       this->set_target(boat.position.x - 10*cos(boat.rotation * M_PI / 180.0f), this->target.y, boat.position.z + 10*sin(boat.rotation * M_PI / 180.0f));
-      this->set_eye(boat.position.x - 4*cos(boat.rotation * M_PI / 180.0f) - 2, boat.position.y, boat.position.z + 0.5*sin(boat.rotation * M_PI / 180.0f));
+      this->set_eye(boat.position.x - 4*cos(boat.rotation * M_PI / 180.0f), boat.position.y, boat.position.z + 0.5*sin(boat.rotation * M_PI / 180.0f));
     } else if (camView == 2) {
       // Top view
       this->set_eye(boat.position.x, boat.position.y + 20, boat.position.z);

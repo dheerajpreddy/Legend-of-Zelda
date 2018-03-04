@@ -4,7 +4,8 @@
 Cuboid::Cuboid(float x, float y, float z, float l, float b, float h, color_t color) {
     this->position = glm::vec3(x, y, z);
     this->rotation = 0;
-    this->speed = 1;
+    this->speed.x = 0;
+    this->speed.y = 0;
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     const GLfloat vertex_buffer_data[] = {
@@ -61,6 +62,14 @@ void Cuboid::draw(glm::mat4 VP) {
     draw3DObject(this->object);
 }
 
+void Cuboid::set_speed(float x, float y) {
+  this->speed = glm::vec2(x, y);
+}
+
+void Cuboid::update_speed(float x, float y) {
+  this->speed += glm::vec2(x, y);
+}
+
 void Cuboid::set_position(float x, float y, float z) {
     this->position = glm::vec3(x, y, z);
 }
@@ -79,6 +88,6 @@ void Cuboid::update_position(float x, float y, float z) {
 
 void Cuboid::tick() {
     // this->rotation += speed;
-    // this->position.x -= speed;
-    // this->position.y -= speed;
+    this->position.x -= this->speed.x;
+    this->position.y += this->speed.y;
 }

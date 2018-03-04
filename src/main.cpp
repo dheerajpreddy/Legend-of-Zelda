@@ -68,7 +68,7 @@ void draw() {
 }
 
 void moveBoat() {
-  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN);
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
   if (up) {
     boat.update_position(-0.1*cos(boat.rotation*M_PI/180.0f), 0, 0.1*sin(boat.rotation * M_PI / 180.0f));
   }
@@ -79,6 +79,13 @@ void moveBoat() {
   } else if (right) {
     boat.update_rotation(-1.0);
   }
+  if (space && boat.position.y < 3.15) {
+    boat.update_position(0, 7.0, 0);
+  }
+  if (boat.position.y > 3.15) {
+    boat.update_position(0, -0.15, 0);
+  }
+
 }
 
 void tick_input(GLFWwindow *window) {

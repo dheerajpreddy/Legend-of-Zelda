@@ -28,7 +28,7 @@ void keyboard(GLFWwindow *window, int key, int scancode, int action, int mods) {
         switch (key) {
           case GLFW_KEY_C:
             camView = (camView+1)%5;
-          break;
+        break;
         // case GLFW_KEY_P:
         // triangle_rot_status = !triangle_rot_status;
         // break;
