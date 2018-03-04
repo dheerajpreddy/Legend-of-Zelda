@@ -27,6 +27,7 @@ Timer t60(1.0 / 60);
 
 // Declaring camera angle views
 extern int camView;
+long long int score = 0;
 
 float randomGen(float min, float max) {
   return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
@@ -53,6 +54,12 @@ void draw() {
     }
 }
 
+void updateScore() {
+  char s[100];
+  sprintf(s, "Health: %lld", boat.health);
+  glfwSetWindowTitle(window, s);
+}
+
 void tick_input(GLFWwindow *window) {
     boat.move(window);                 // Moves boat
     cam.update(boat, camView);  // Updates camera based on camView
@@ -62,10 +69,14 @@ void tick_elements() {
     ocean.tick();
     boat.tick();
     for(int i=0; i<100; i++) {
+      if (detect_collision(boat.bounding_box(), rocks[i].bounding_box())) {
+        boat.update_position(2*cos(boat.rotation*M_PI / 180.0f), 0, -2*sin(boat.rotation*M_PI / 180.0f));
+        boat.update_health(-1);
+      }
       rocks[i].tick();
     }
-    // boat.update_position(0, 0.05*cos((bouncer++)/8), 0);
-    // camera_rotation_angle += 0.1;
+    updateScore();
+
 }
 
 /* Initialize the OpenGL rendering properties */
@@ -135,11 +146,11 @@ int main(int argc, char **argv) {
     quit(window);
 }
 
-// bool detect_collision(bounding_box_t a, bounding_box_t b) {
-//     return (abs(a.x - b.x) * 2 < (a.length + b.length)) &&
-//            (abs(a.y - b.y) * 2 < (a.height + b.height)) &&
-//            (abs(a.z - b.z) * 2 < (a.width + b.width));
-// }
+bool detect_collision(bounding_box_t a, bounding_box_t b) {
+    return (abs(a.x - b.x) * 2 < (a.length + b.length)) &&
+           (abs(a.y - b.y) * 2 < (a.height + b.height)) &&
+           (abs(a.z - b.z) * 2 < (a.width + b.width));
+}
 
 void reset_screen() {
     float top    = screen_center_y + 4 / screen_zoom;

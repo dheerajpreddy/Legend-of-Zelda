@@ -9,6 +9,10 @@ Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) 
     this->set_position(x, y, z);
     this->set_rotation(0);
     this->set_speed(0, 0, 0);
+    this->set_health(100);
+    this->l = l;
+    this->b = b;
+    this->h = h;
     this->base = Cuboid(x, y, z, l, b, h, color);
     this->sail = Sail(x, y+ 2, z, 5, 4, 0.2, COLOR_WHITE);
 }
@@ -45,6 +49,15 @@ void Boat::update_rotation(float x) {
     this->rotation += x;
     this->base.update_rotation(x);
 }
+
+void Boat::update_health(long long x) {
+    this->health +=x;
+}
+
+void Boat::set_health(long long x) {
+    this->health =x;
+}
+
 
 void Boat::update_position(float x, float y, float z) {
     this->position += glm::vec3(x, y, z);
@@ -87,4 +100,10 @@ void Boat::move(GLFWwindow *window) {
   }
   this->base.move(window);
   // this->sail.move(window);
+}
+
+bounding_box_t Boat::bounding_box() {
+  float x = this->position.x, y = this->position.y, z = this->position.z;
+  bounding_box_t bbox = {x, y, z, 2*this->l, 2*this->b, 2*this->h};
+  return bbox;
 }

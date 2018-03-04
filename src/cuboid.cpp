@@ -5,6 +5,9 @@ Cuboid::Cuboid(float x, float y, float z, float l, float b, float h, color_t col
     this->set_position(x, y, z);
     this->set_rotation(0);
     this->set_speed(0, 0, 0);
+    this->l = l;
+    this->b = b;
+    this->h = h;
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     const GLfloat vertex_buffer_data[] = {
@@ -111,4 +114,10 @@ void Cuboid::move(GLFWwindow *window) {
     this->update_position(0, -0.15, 0);
   }
 
+}
+
+bounding_box_t Cuboid::bounding_box() {
+  float x = this->position.x, y = this->position.y, z = this->position.z;
+  bounding_box_t bbox = {x, y, z, 2*this->l, 2*this->b, 2*this->h};
+  return bbox;
 }

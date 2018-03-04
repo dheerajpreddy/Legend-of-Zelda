@@ -8,6 +8,7 @@ class Cuboid {
 public:
     Cuboid() {}
     Cuboid(float x, float y, float z, float l, float b, float h, color_t color);
+    float l, b, h;
     glm::vec3 position;
     glm::vec3 speed;
     float rotation;
@@ -19,6 +20,7 @@ public:
     void set_speed(float x, float y, float z);
     void update_speed(float x, float y, float z);
     void move(GLFWwindow *window);
+    bounding_box_t bounding_box();
     void tick();
 private:
     VAO *object;
