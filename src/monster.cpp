@@ -2,14 +2,15 @@
 #include "monster.h"
 #include "main.h"
 
-unsigned long long bouncer2 = 0;
+unsigned long long bouncer2 = 3;
 
-Monster::Monster(float x, float y, float z, float scale, color_t color) {
+Monster::Monster(float x, float y, float z, float scale, int type, color_t color) {
     this->set_position(x, y, z);
     this->set_rotation(0);
     this->set_speed(0, 0, 0);
     this->set_health(100);
     this->l = 3*scale, this->b=3*scale, this->h=3*scale;
+    this->type = type;
 
     this->center = Cuboid(x, y, z, l, b, h, color);
     this->left = Cuboid(x, y, z + 3*l/2, l/2, b/2, h/2, color);
@@ -81,7 +82,7 @@ void Monster::update_position(float x, float y, float z) {
 }
 
 void Monster::tick() {
-    
+  this->update_position(0, 0.02*cos((bouncer2++)/8), 0);
 }
 
 // void Monster::move(GLFWwindow *window) {
@@ -109,6 +110,6 @@ void Monster::tick() {
 
 bounding_box_t Monster::bounding_box() {
   float x = this->position.x, y = this->position.y, z = this->position.z;
-  bounding_box_t bbox = {x, y, z, 4, 4, 4};
+  bounding_box_t bbox = {x, y, z, 2*this->l, 2*this->b, 2*this->h};
   return bbox;
 }

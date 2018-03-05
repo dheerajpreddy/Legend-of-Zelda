@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "boat.h"
 #include "monster.h"
+#include "barrel.h"
 
 using namespace std;
 
@@ -18,18 +19,16 @@ GLFWwindow *window;
 Cuboid ocean, rocks[100];
 Monster m;
 Boat boat;
+Barrel barrels[100];
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 Camera cam;
 Timer t60(1.0 / 60);
 
-// iterator for bouncing cosine for the boat
-// unsigned long long bouncer = 0;
-
 // Declaring camera angle views
 extern int camView;
-long long int score = 0;
+unsigned long long int score = 0;
 
 float randomGen(float min, float max) {
   return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
@@ -53,13 +52,13 @@ void draw() {
     boat.draw(VP);
     for(int i=0; i<100; i++) {
       rocks[i].draw(VP);
+      barrels[i].draw(VP);
     }
-    m.draw(VP);
 }
 
 void updateTitle() {
   char s[100];
-  sprintf(s, "Health: %lld", boat.health);
+  sprintf(s, "Health: %lld, Score: %llu", boat.health, score);
   glfwSetWindowTitle(window, s);
 }
 
@@ -78,7 +77,12 @@ void tick_elements() {
         boat.update_position(2*cos(boat.rotation*M_PI / 180.0f), 0, -2*sin(boat.rotation*M_PI / 180.0f));
         boat.update_health(-1);
       }
+      if (detect_collision(boat.bounding_box(), barrels[i].bounding_box())) {
+        barrels[i].set_position(randomGen(-500, 500), 2.5, randomGen(-500, 500));
+        score+= barrels[i].gift_val;
+      }
       rocks[i].tick();
+      barrels[i].tick();
     }
 
     // Updating title bar
@@ -95,11 +99,13 @@ void initGL(GLFWwindow *window, int width, int height) {
     glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
     cam = Camera(eye, target, up);
     ocean       = Cuboid(0.0, 0.0, 0.0, 1000.0, 2.0, 1000.0, COLOR_OCEAN_BLUE);
-    boat       = Boat(0.0, 2.5, 0.0, 1.0, 1.0, 1.0, COLOR_RED);
+    boat       = Boat(0.0, 2.5, 0.0, 3.0, 1.0, 1.5, COLOR_RED);
     for (int i = 0; i < 100; i++) {
         rocks[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.5, 0.5, 0.5, COLOR_BLACK);
+        barrels[i] = Barrel(randomGen(-500, 500), 2.5, randomGen(-500, 500), COLOR_BARREL);
     }
-    m = Monster(3.0, 2.5, 3.0, 1.0, COLOR_BLACK);
+    // m = Monster(3.0, 2.5, 3.0, 1.0, 0, COLOR_BLACK);
+    // b = Barrel(3.0, 2.5, 3.0, COLOR_BARREL);
     // rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
