@@ -15,6 +15,8 @@ public:
     Sail sail;
     glm::vec3 position;
     glm::vec3 speed;
+    int wind;
+    unsigned long long counter;
     long long health;
     float rotation;
     void draw(glm::mat4 VP);
@@ -27,6 +29,7 @@ public:
     void set_health(long long x);
     void update_health(long long x);
     void tick();
+    void windHandler();
     bounding_box_t bounding_box();
     void move(GLFWwindow *window);
 private:

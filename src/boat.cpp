@@ -5,6 +5,10 @@
 
 unsigned long long bouncer = 0;
 
+float randomGen2(float min, float max) {
+  return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
+}
+
 Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) {
     this->set_position(x, y, z);
     this->set_rotation(0);
@@ -15,6 +19,9 @@ Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) 
     this->h = h;
     this->base = Cuboid(x, y, z, l, b, h, color);
     this->sail = Sail(x, y+ 2, z, 5, 4, 0.2, COLOR_WHITE);
+    this->sail.set_rotation(this->rotation + 90);
+    this->counter = 0;
+    this->wind = 0;
 }
 
 void Boat::draw(glm::mat4 VP) {
@@ -66,7 +73,6 @@ void Boat::update_position(float x, float y, float z) {
 }
 
 void Boat::tick() {
-    // this->rotation += speed;
     this->update_position(0, 0.05*cos((bouncer++)/8), 0);
     this->position.x -= this->speed.x;
     this->position.y += this->speed.y;
@@ -74,7 +80,7 @@ void Boat::tick() {
     this->position = this->base.position;
     this->rotation = this->base.rotation;
     this->sail.position = this->base.position + glm::vec3(0, 2.5, 0);
-    this->sail.set_rotation(this->rotation);
+    this->windHandler();
     this->base.tick();
     this->sail.tick();
 }
@@ -100,6 +106,44 @@ void Boat::move(GLFWwindow *window) {
   }
   this->base.move(window);
   // this->sail.move(window);
+}
+
+void Boat::windHandler() {
+  //Increasing counter to change wind
+  if ((this->counter++) % 500 == 0) {
+      this->wind = (int)randomGen2(0, 4);
+  }
+  // Changing rotation of sail and position of boat based on wind
+  if (this->wind == 0) {                                     // No wind, default
+    this->sail.set_rotation(this->rotation+90);              // Sail is always perpendicular to boat
+  } else if (this->wind == 1 || this->wind == 2) {
+    // Sail rotation
+    if(this->sail.rotation < 90) {
+      this->sail.update_rotation(1);
+    } else if(this->sail.rotation > 90) {
+      this->sail.update_rotation(-1);
+    }
+    // Boat position
+    if(wind == 1) {
+      this->update_position(0.01, 0, 0);
+    } else {
+      this->update_position(-0.01, 0, 0);
+    }
+  } else {
+    // Sail rotation
+    if(this->sail.rotation < 0) {
+      this->sail.update_rotation(1);
+    } else if(this->sail.rotation > 0) {
+      this->sail.update_rotation(-1);
+    }
+    // Boat position
+    if(wind == 3) {
+      this->update_position(0, 0, 0.01);
+    } else {
+      this->update_position(0, 0, -0.01);
+    }
+  }
+
 }
 
 bounding_box_t Boat::bounding_box() {

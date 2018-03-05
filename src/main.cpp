@@ -54,7 +54,7 @@ void draw() {
     }
 }
 
-void updateScore() {
+void updateTitle() {
   char s[100];
   sprintf(s, "Health: %lld", boat.health);
   glfwSetWindowTitle(window, s);
@@ -68,6 +68,8 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ocean.tick();
     boat.tick();
+
+    // Collission detection with rocks
     for(int i=0; i<100; i++) {
       if (detect_collision(boat.bounding_box(), rocks[i].bounding_box())) {
         boat.update_position(2*cos(boat.rotation*M_PI / 180.0f), 0, -2*sin(boat.rotation*M_PI / 180.0f));
@@ -75,7 +77,9 @@ void tick_elements() {
       }
       rocks[i].tick();
     }
-    updateScore();
+
+    // Updating title bar
+    updateTitle();
 
 }
 
