@@ -16,7 +16,7 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
-Cuboid ocean, rocks[100];
+Cuboid ocean, rocks[100], healthPoints[100];
 Monster m;
 Boat boat;
 Barrel barrels[100];
@@ -52,6 +52,7 @@ void draw() {
     boat.draw(VP);
     for(int i=0; i<100; i++) {
       rocks[i].draw(VP);
+      healthPoints[i].draw(VP);
       barrels[i].draw(VP);
     }
 }
@@ -81,6 +82,11 @@ void tick_elements() {
         barrels[i].set_position(randomGen(-500, 500), 2.5, randomGen(-500, 500));
         score+= barrels[i].gift_val;
       }
+      if (detect_collision(boat.bounding_box(), healthPoints[i].bounding_box())) {
+        healthPoints[i].set_position(randomGen(-500, 500), 2.5, randomGen(-500, 500));
+        boat.update_health((int)randomGen(2, 10));
+      }
+      healthPoints[i].tick();
       rocks[i].tick();
       barrels[i].tick();
     }
@@ -102,11 +108,9 @@ void initGL(GLFWwindow *window, int width, int height) {
     boat       = Boat(0.0, 2.5, 0.0, 3.0, 1.0, 1.5, COLOR_RED);
     for (int i = 0; i < 100; i++) {
         rocks[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.5, 0.5, 0.5, COLOR_BLACK);
+        healthPoints[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.3, 0.3, 0.3, COLOR_GREEN);
         barrels[i] = Barrel(randomGen(-500, 500), 2.5, randomGen(-500, 500), COLOR_BARREL);
     }
-    // m = Monster(3.0, 2.5, 3.0, 1.0, 0, COLOR_BLACK);
-    // b = Barrel(3.0, 2.5, 3.0, COLOR_BARREL);
-    // rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform
