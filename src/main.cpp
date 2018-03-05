@@ -3,6 +3,7 @@
 #include "cuboid.h"
 #include "camera.h"
 #include "boat.h"
+#include "monster.h"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ GLFWwindow *window;
 **************************/
 
 Cuboid ocean, rocks[100];
+Monster m;
 Boat boat;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
@@ -52,6 +54,7 @@ void draw() {
     for(int i=0; i<100; i++) {
       rocks[i].draw(VP);
     }
+    m.draw(VP);
 }
 
 void updateTitle() {
@@ -96,6 +99,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     for (int i = 0; i < 100; i++) {
         rocks[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.5, 0.5, 0.5, COLOR_BLACK);
     }
+    m = Monster(3.0, 2.5, 3.0, 1.0, COLOR_BLACK);
     // rocks[0]    = Cuboid(2.0, 2.5, 0.0, 0.5, 0.5, 0.5, COLOR_BLACK);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
