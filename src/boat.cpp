@@ -18,7 +18,8 @@ Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) 
     this->b = b;
     this->h = h;
     this->base = Cuboid(x, y, z, l, b, h, color);
-    this->cannon = Cuboid(x, y + 2, z, 3, 0.15, 0.15, COLOR_BLACK);
+    this->fireball = Cuboid(x, y, z, 0.2, 0.2, 0.2, color);
+    this->cannon = Cuboid(x, y + 2, z, 3, 0.15, 0.15, COLOR_BOOSTER);
     this->sail = Sail(x, y+ 2, z, 5, 4, 0.2, COLOR_WHITE);
     this->sail.set_rotation(this->rotation.y + 90);
     this->counter = 0;
@@ -29,6 +30,7 @@ void Boat::draw(glm::mat4 VP) {
   this->sail.draw(VP);
   this->base.draw(VP);
   this->cannon.draw(VP);
+  this->fireball.draw(VP);
 }
 
 void Boat::set_speed(float x, float y, float z) {
@@ -49,18 +51,22 @@ void Boat::set_position(float x, float y, float z) {
     this->position = glm::vec3(x, y, z);
     this->base.set_position(x, y, z);
     this->sail.set_position(x, y+ 2, z);
+    this->fireball.set_position(x, y, z);
     this->cannon.set_position(x, y+ 2, z);
 }
 
 void Boat::set_rotation(float x, float y, float z) {
     this->rotation = glm::vec3(x, y, z);
     this->base.set_rotation(x, y, z);
+    this->base.set_rotation(x, y, z);
+    this->fireball.set_rotation(x, y, z);
     this->cannon.set_rotation(x, y, this->rotation.z-30);
 }
 
 void Boat::update_rotation(float x, float y, float z) {
     this->rotation += glm::vec3(x, y, z);
     this->base.update_rotation(x, y, z);
+    this->fireball.update_rotation(x, y, z);
     this->base.update_rotation(x, y, 0);
 }
 
@@ -76,6 +82,7 @@ void Boat::update_position(float x, float y, float z) {
     this->position += glm::vec3(x, y, z);
     this->base.update_position(x, y, z);
     this->sail.update_position(x, y, z);
+    this->fireball.update_position(x, y, z);
     this->cannon.update_position(x, y, z);
 }
 
@@ -89,14 +96,21 @@ void Boat::tick() {
     this->cannon.position = this->base.position + glm::vec3(0, 1.5, 0);
     this->cannon.set_rotation(this->base.rotation.x, this->base.rotation.y, -30);
     this->sail.position = this->base.position + glm::vec3(0, 2.5, 0);
+    if (this->fireball.position.y > -1 && this->fireball.speed.y != 0) {
+      this->fireball.speed.y -= 0.1;
+    } else {
+      this->fireball.set_position(this->position.x, this->position.y, this->position.z);
+      this->fireball.set_speed(0, 0, 0);
+    }
     this->windHandler();
     this->base.tick();
     this->sail.tick();
     this->cannon.tick();
+    this->fireball.tick();
 }
 
 void Boat::move(GLFWwindow *window) {
-  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE), a = glfwGetKey(window, GLFW_KEY_A);
   if (up) {
     this->update_position(-0.1*cos(this->rotation.y*M_PI/180.0f), 0, 0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
@@ -113,6 +127,11 @@ void Boat::move(GLFWwindow *window) {
   }
   if (this->position.y > 3.15) {
     this->update_position(0, -0.15, 0);
+  }
+  if (a && this->fireball.position == this->position) {
+    std::cout<<"yas";
+    this->wind = 0;
+    this->fireball.shoot(this->rotation.y, 1.5);
   }
   this->base.move(window);
   // this->sail.move(window);

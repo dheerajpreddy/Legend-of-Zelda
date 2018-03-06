@@ -20,7 +20,7 @@ public:
     void set_speed(float x, float y, float z);
     void update_speed(float x, float y, float z);
     void move(GLFWwindow *window);
-    void shoot(float x);
+    void shoot(float x, float p);
     bounding_box_t bounding_box();
     void tick();
 private:

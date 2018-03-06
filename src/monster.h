@@ -9,9 +9,9 @@ class Monster {
 public:
     Monster() {}
     Monster(float x, float y, float z, float scale, int type, color_t color1);
-    Cuboid center, right, left, top, gift;
+    Cuboid center, right, left, top, gifts[10], booster, fireball;
     float l, b, h;
-    int type;
+    int type, attackDamage, nGifts;
     glm::vec3 position;
     glm::vec3 speed;
     long long health;

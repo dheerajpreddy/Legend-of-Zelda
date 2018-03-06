@@ -11,11 +11,19 @@ Monster::Monster(float x, float y, float z, float scale, int type, color_t color
     this->set_health(100);
     this->l = 3*scale, this->b=3*scale, this->h=3*scale;
     this->type = type;
-
+    if(type == 69) {
+      // boss Monster
+      this->attackDamage = 20;
+      this->set_health(200);
+    }
     this->center = Cuboid(x, y, z, l, b, h, color);
     this->left = Cuboid(x, y, z + 3*l/2, l/2, b/2, h/2, color);
     this->right = Cuboid(x, y, z - 3*l/2, l/2, b/2, h/2, color);
     this->top = Cuboid(x, y + 3*l/2, z, l/2, b/2, h/2, color);
+    for(int i=0; i<nGifts; i++){
+      this->gifts[i] = Cuboid(x, y - 10, z, 0.2, 0.2, 0.2, COLOR_GIFT);
+    }
+    this->booster = Cuboid(x, y - 10, z, 0.3, 0.3, 0.3, COLOR_BOOSTER);
 }
 
 void Monster::draw(glm::mat4 VP) {
@@ -23,6 +31,10 @@ void Monster::draw(glm::mat4 VP) {
   this->left.draw(VP);
   this->right.draw(VP);
   this->top.draw(VP);
+  this->booster.draw(VP);
+  for(int i=0; i<nGifts; i++) {
+    this->gifts[i].draw(VP);
+  }
 }
 
 void Monster::set_speed(float x, float y, float z) {
@@ -31,6 +43,10 @@ void Monster::set_speed(float x, float y, float z) {
   this->left.set_speed(x, y, z);
   this->right.set_speed(x, y, z);
   this->top.set_speed(x, y, z);
+  this->booster.set_speed(x, y, z);
+  for(int i=0; i<nGifts; i++) {
+    this->gifts[i].set_speed(x, y, z);
+  }
 }
 
 void Monster::update_speed(float x, float y, float z) {
@@ -39,6 +55,10 @@ void Monster::update_speed(float x, float y, float z) {
   this->left.update_speed(x, y, z);
   this->right.update_speed(x, y, z);
   this->top.update_speed(x, y, z);
+  this->booster.update_speed(x, y, z);
+  for(int i=0; i<nGifts; i++) {
+    this->gifts[i].set_speed(x, y, z);
+  }
 }
 
 void Monster::set_position(float x, float y, float z) {
@@ -47,6 +67,12 @@ void Monster::set_position(float x, float y, float z) {
   this->left.set_position(x, y, z + 4.5);
   this->right.set_position(x, y, z - 4.5);
   this->top.set_position(x, y + 4.5, z);
+  if(this->health>0) {
+    this->booster.set_position(x, y - 10, z);
+    for(int i=0; i<nGifts; i++) {
+      this->gifts[i].set_position(x, y - 10, z);
+    }
+  }
 }
 
 void Monster::set_rotation(float x, float y, float z) {
@@ -55,6 +81,10 @@ void Monster::set_rotation(float x, float y, float z) {
     this->left.set_rotation(x, y, z);
     this->right.set_rotation(x, y, z);
     this->top.set_rotation(x, y, z);
+    this->booster.set_rotation(x, y, z);
+    for(int i=0; i<nGifts; i++) {
+      this->gifts[i].set_rotation(x, y, z);
+    }
 }
 
 void Monster::update_rotation(float x, float y, float z) {
@@ -63,6 +93,10 @@ void Monster::update_rotation(float x, float y, float z) {
     this->left.update_rotation(x, y, z);
     this->right.update_rotation(x, y, z);
     this->top.update_rotation(x, y, z);
+    this->booster.update_rotation(x, y, z);
+    for(int i=0; i<nGifts; i++) {
+      this->gifts[i].update_rotation(x, y, z);
+    }
 }
 
 void Monster::update_health(long long x) {
@@ -79,10 +113,22 @@ void Monster::update_position(float x, float y, float z) {
     this->left.update_position(x, y, z);
     this->right.update_position(x, y, z);
     this->top.update_position(x, y, z);
+    this->booster.update_position(x, y, z);
+    for(int i=0; i<nGifts; i++) {
+      this->gifts[i].update_position(x, y, z);
+    }
 }
 
 void Monster::tick() {
   this->update_position(0, 0.02*cos((bouncer2++)/8), 0);
+  this->center.tick();
+  this->left.tick();
+  this->right.tick();
+  this->top.tick();
+  this->booster.tick();
+  for(int i=0; i<nGifts; i++) {
+    this->gifts[i].tick();
+  }
 }
 
 // void Monster::move(GLFWwindow *window) {

@@ -10,7 +10,7 @@ class Boat {
 public:
     Boat() {}
     Boat(float x, float y, float z, float l, float b, float h, color_t color1);
-    Cuboid base, cannon;
+    Cuboid base, cannon, fireball;
     float l, b, h;
     Sail sail;
     glm::vec3 position;
