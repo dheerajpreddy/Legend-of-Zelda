@@ -37,7 +37,7 @@ Monster::Monster(float x, float y, float z, float scale, int type, color_t color
     for(int i=0; i<nGifts; i++){
       this->gifts[i] = Cuboid(x, y - 10, z, 0.2, 0.2, 0.2, COLOR_GIFT);
     }
-    this->booster = Cuboid(x, y, z, 0.3, 0.3, 0.3, COLOR_BOOSTER);
+    // this->booster = Cuboid(x, y, z, 0.3, 0.3, 0.3, COLOR_BOOSTER);
 }
 
 void Monster::draw(glm::mat4 VP) {
@@ -45,7 +45,7 @@ void Monster::draw(glm::mat4 VP) {
   this->left.draw(VP);
   this->right.draw(VP);
   this->top.draw(VP);
-  this->booster.draw(VP);
+  // this->booster.draw(VP);
   this->fireball.draw(VP);
   for(int i=0; i<nGifts; i++) {
     this->gifts[i].draw(VP);
@@ -58,7 +58,7 @@ void Monster::set_speed(float x, float y, float z) {
   this->left.set_speed(x, y, z);
   this->right.set_speed(x, y, z);
   this->top.set_speed(x, y, z);
-  this->booster.set_speed(x, y, z);
+  // this->booster.set_speed(x, y, z);
   // for(int i=0; i<nGifts; i++) {
   //   this->gifts[i].set_speed(x, y, z);
   // }
@@ -70,7 +70,7 @@ void Monster::update_speed(float x, float y, float z) {
   this->left.update_speed(x, y, z);
   this->right.update_speed(x, y, z);
   this->top.update_speed(x, y, z);
-  this->booster.update_speed(x, y, z);
+  // this->booster.update_speed(x, y, z);
   // for(int i=0; i<nGifts; i++) {
   //   this->gifts[i].set_speed(x, y, z);
   // }
@@ -83,10 +83,10 @@ void Monster::set_position(float x, float y, float z) {
   this->left.set_position(x, y, z + 4.5);
   this->right.set_position(x, y, z - 4.5);
   this->top.set_position(x, y + 4.5, z);
-  this->booster.set_position(x, y - 10, z);
-  for(int i=0; i<nGifts; i++) {
-    this->gifts[i].set_position(x, y, z);
-  }
+  // this->booster.set_position(x, y - 10, z);
+  // for(int i=0; i<nGifts; i++) {
+  //   this->gifts[i].set_position(x, y - 10, z);
+  // }
 }
 
 void Monster::set_rotation(float x, float y, float z) {
@@ -96,10 +96,10 @@ void Monster::set_rotation(float x, float y, float z) {
     this->left.set_rotation(x, y, z);
     this->right.set_rotation(x, y, z);
     this->top.set_rotation(x, y, z);
-    this->booster.set_rotation(x, y, z);
-    for(int i=0; i<nGifts; i++) {
-      this->gifts[i].set_rotation(x, y, z);
-    }
+    // this->booster.set_rotation(x, y, z);
+    // for(int i=0; i<nGifts; i++) {
+    //   this->gifts[i].set_rotation(x, y, z);
+    // }
 }
 
 void Monster::update_rotation(float x, float y, float z) {
@@ -109,10 +109,10 @@ void Monster::update_rotation(float x, float y, float z) {
     this->left.update_rotation(x, y, z);
     this->right.update_rotation(x, y, z);
     this->top.update_rotation(x, y, z);
-    this->booster.update_rotation(x, y, z);
-    for(int i=0; i<nGifts; i++) {
-      this->gifts[i].update_rotation(x, y, z);
-    }
+    // this->booster.update_rotation(x, y, z);
+    // for(int i=0; i<nGifts; i++) {
+    //   this->gifts[i].update_rotation(x, y, z);
+    // }
 }
 
 void Monster::update_health(long long x) {
@@ -130,10 +130,10 @@ void Monster::update_position(float x, float y, float z) {
     this->left.update_position(x, y, z);
     this->right.update_position(x, y, z);
     this->top.update_position(x, y, z);
-    this->booster.update_position(x, y, z);
-    for(int i=0; i<nGifts; i++) {
-      this->gifts[i].update_position(x, y, z);
-    }
+    // this->booster.update_position(x, y, z);
+    // for(int i=0; i<nGifts; i++) {
+    //   this->gifts[i].update_position(x, y, z);
+    // }
 }
 
 void Monster::tick() {
@@ -142,25 +142,21 @@ void Monster::tick() {
   this->left.tick();
   this->right.tick();
   this->top.tick();
-  this->booster.tick();
-  for(int i=0; i<nGifts; i++) {
-    this->gifts[i].tick();
-  }
+  // this->booster.tick();
   if(this->health<=0 && !this->isDead) {
     this->isDead = true;
     deathCount++;
     this->spreadTheLove();
+    this->oldPos = this->position;
     this->set_position(-10,-100, -10);
     if(type==0) {
       this->set_health(-100);
     } else if(type==1){
       this->set_health(-150);
-    } //else {
-    //   bossFlag = false;
-    //   this->isDead = false;
-    //   deathCount--;
-    //   this->set_health(200);
-    // }
+    }
+    for(int i=0; i<nGifts; i++) {
+      this->gifts[i].tick();
+    }
   }
   if (this->fireball.position.y > -1 && this->fireball.speed.y != 0) {
     this->fireball.speed.y -= 0.1;
@@ -173,12 +169,12 @@ void Monster::tick() {
 
 void Monster::spreadTheLove() {
   if(this->type==69) {
-    this->booster.set_position(this->position.x, this->position.y + 1, this->position.z);
+    // this->booster.set_position(this->position.x, this->position.y + 1, this->position.z);
     // this->booster.shoot(randomGen4(0, 360), 0.5);
   } else {
     for(int i=0; i<nGifts; i++) {
-      this->gifts[i].set_position(this->position.x, this->position.y + 2, this->position.z);
-      // this->gifts[i].shoot(randomGen4(0, 360), 3);
+      this->gifts[i].set_position(this->oldPos.x - 2, this->oldPos.y + 1, this->oldPos.z);
+      // this->gifts[i].shoot(randomGen4(0, 360), 1.5);
     }
   }
 }

@@ -16,7 +16,7 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
-Cuboid ocean, rocks[100], healthPoints[100];
+Cuboid ocean, rocks[100], healthPoints[100], gifts[10];
 Monster m[50], boss, mo;
 Boat boat;
 Barrel barrels[100];
@@ -59,6 +59,9 @@ void draw() {
       if(i%2 == 0) {
         m[i/2].draw(VP);
       }
+    }
+    for(int i=0; i<10; i++) {
+      gifts[i].draw(VP);
     }
     // mo.draw(VP);
     boss.draw(VP);
@@ -120,7 +123,20 @@ void tick_elements() {
       }
       if (detect_collision(boat.fireball.bounding_box(), m[i].bounding_box())) {
         m[i].health -= 50;
+        if(m[i].health <= 0) {
+          for(int j=0; j<10; j++) {
+            gifts[j].set_position(randomGen(m[i].position.x-0.25, m[i].position.x+0.25), 2.0, randomGen(m[i].position.y-0.25, m[i].position.y+0.25));
+            cout<<gifts[j].position.x<<" "<<gifts[j].position.y<<" "<<gifts[j].position.z<<endl;
+          }
+        }
       }
+    }
+    for(int i=0; i<10; i++) {
+      if (detect_collision(boat.bounding_box(), gifts[i].bounding_box())) {
+        score+=(int)randomGen(3, 10);
+        gifts[i].set_position(-2, -2, -2);
+      }
+      gifts[i].tick();
     }
     x_dist = -boss.position.x + boat.position.x;
     z_dist = -boss.position.z + boat.position.z;
@@ -170,6 +186,9 @@ void initGL(GLFWwindow *window, int width, int height) {
             m[i/2] = Monster(randomGen(-500, 500), 2.5, randomGen(-500, 500), 1.0, 0, COLOR_GREEN);
           }
         }
+    }
+    for(int i =0; i<10; i++) {
+      gifts[i] = Cuboid(-3, -3, -3, 0.2, 0.2, 0.2, COLOR_GIFT);
     }
     boss = Monster(-10, -100, -10, 2.0, 69, COLOR_BLACK);
     bossFlag = false;

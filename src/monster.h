@@ -16,7 +16,7 @@ public:
     glm::vec3 speed;
     long long health;
     bool isDead;
-    glm::vec3 rotation;
+    glm::vec3 rotation, oldPos;
     void draw(glm::mat4 VP);
     void set_position(float x, float y, float z);
     void update_position(float x, float y, float z);
