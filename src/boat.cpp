@@ -129,7 +129,6 @@ void Boat::move(GLFWwindow *window) {
     this->update_position(0, -0.15, 0);
   }
   if (a && this->fireball.position == this->position) {
-    std::cout<<"yas";
     this->wind = 0;
     this->fireball.shoot(this->rotation.y, 1.5);
   }

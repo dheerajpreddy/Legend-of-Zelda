@@ -17,9 +17,10 @@ GLFWwindow *window;
 **************************/
 
 Cuboid ocean, rocks[100], healthPoints[100];
-Monster m;
+Monster m[50], boss, mo;
 Boat boat;
 Barrel barrels[100];
+extern bool bossFlag;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -29,6 +30,7 @@ Timer t60(1.0 / 60);
 // Declaring camera angle views
 extern int camView;
 unsigned long long int score = 0;
+extern int deathCount;
 
 float randomGen(float min, float max) {
   return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
@@ -54,7 +56,12 @@ void draw() {
       rocks[i].draw(VP);
       healthPoints[i].draw(VP);
       barrels[i].draw(VP);
+      if(i%2 == 0) {
+        m[i/2].draw(VP);
+      }
     }
+    // mo.draw(VP);
+    boss.draw(VP);
 }
 
 void updateTitle() {
@@ -89,8 +96,54 @@ void tick_elements() {
       healthPoints[i].tick();
       rocks[i].tick();
       barrels[i].tick();
+      // if(i%2 == 0) {
+      //   if( detect_collision(boat.fireball.bounding_box(), m[i/2].bounding_box()) ) {
+      //     m[i/2].update_health(-30);
+      //     cout<<m[i/2].health;
+      //   }
+      // //   m[i/2].tick();
+      // }
     }
-
+    // mo.tick();
+    // if(mo.fireball.position == mo.position)
+    //   mo.fireball.shoot(45, 2);
+    float x_dist, z_dist, temp_dist;
+    for (int i = 0; i < 50; i++) {
+      m[i].tick();
+      x_dist = -m[i].position.x + boat.position.x;
+      z_dist = -m[i].position.z + boat.position.z;
+      temp_dist = sqrt(x_dist*x_dist + z_dist*z_dist);
+      if (m[i].fireball.position == m[i].position && m[i].health > 0)
+        m[i].fireball.shoot((180.0f - atan2(z_dist,x_dist)*180.0f/M_PI), temp_dist/30);
+      if (detect_collision(m[i].fireball.bounding_box(), boat.bounding_box())) {
+        boat.health -= m[i].attackDamage/5;
+      }
+      if (detect_collision(boat.fireball.bounding_box(), m[i].bounding_box())) {
+        m[i].health -= 50;
+      }
+    }
+    x_dist = -boss.position.x + boat.position.x;
+    z_dist = -boss.position.z + boat.position.z;
+    temp_dist = sqrt(x_dist*x_dist + z_dist*z_dist);
+    if (boss.fireball.position == boss.position)
+      boss.fireball.shoot((180.0f - atan2(z_dist,x_dist)*180.0f/M_PI), temp_dist/30);
+    if (detect_collision(boss.fireball.bounding_box(), boat.bounding_box())) {
+      boat.health -= boss.attackDamage/5;
+    }
+    if (bossFlag && detect_collision(boat.fireball.bounding_box(), boss.bounding_box())) {
+      boss.health -= 3;
+      if(boss.health<=0) {
+        boss.set_position(-10, -100, -10);
+        bossFlag = false;
+        deathCount++;
+      }
+    }
+    if(deathCount%3==0 && deathCount!=0 && !bossFlag) {
+      boss.set_position(randomGen(boat.position.x-50, boat.position.x+50), 10, randomGen(boat.position.z-50, boat.position.z+50));
+      boss.set_health(200);
+      bossFlag = true;
+    }
+    boss.tick();
     // Updating title bar
     updateTitle();
 
@@ -101,7 +154,7 @@ void tick_elements() {
 void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
-
+    deathCount = 0;
     glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
     cam = Camera(eye, target, up);
     ocean       = Cuboid(0.0, 0.0, 0.0, 1000.0, 2.0, 1000.0, COLOR_OCEAN_BLUE);
@@ -110,7 +163,17 @@ void initGL(GLFWwindow *window, int width, int height) {
         rocks[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.5, 0.5, 0.5, COLOR_BLACK);
         healthPoints[i] = Cuboid(randomGen(-500, 500), 2.5, randomGen(-500, 500), 0.3, 0.3, 0.3, COLOR_GREEN);
         barrels[i] = Barrel(randomGen(-500, 500), 2.5, randomGen(-500, 500), COLOR_BARREL);
+        if(i%2 == 0) {
+          if(i%4 == 0) {
+            m[i/2] = Monster(randomGen(-500, 500), 2.5, randomGen(-500, 500), 1.0, 1, COLOR_BOOSTER);
+          } else {
+            m[i/2] = Monster(randomGen(-500, 500), 2.5, randomGen(-500, 500), 1.0, 0, COLOR_GREEN);
+          }
+        }
     }
+    boss = Monster(-10, -100, -10, 2.0, 69, COLOR_BLACK);
+    bossFlag = false;
+    mo = Monster(-1, 2.5, -3, 1.0, 1, COLOR_BOOSTER);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform

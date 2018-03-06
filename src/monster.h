@@ -15,6 +15,7 @@ public:
     glm::vec3 position;
     glm::vec3 speed;
     long long health;
+    bool isDead;
     glm::vec3 rotation;
     void draw(glm::mat4 VP);
     void set_position(float x, float y, float z);
@@ -26,6 +27,7 @@ public:
     void set_health(long long x);
     void update_health(long long x);
     void tick();
+    void spreadTheLove();
     bounding_box_t bounding_box();
     void move(GLFWwindow *window);
 private:
