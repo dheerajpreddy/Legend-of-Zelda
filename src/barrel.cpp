@@ -10,7 +10,7 @@ float randomGen3(float min, float max) {
 
 Barrel::Barrel(float x, float y, float z, color_t color) {
     this->set_position(x, y, z);
-    this->set_rotation(0);
+    this->set_rotation(0, 0, 0);
     this->set_speed(0, 0, 0);
     this->l = 1.0, this->b=0.5, this->h=0.4;
     this->gift_val = (int)randomGen3(0, 11);
@@ -42,16 +42,16 @@ void Barrel::set_position(float x, float y, float z) {
   this->gift.set_position(x, y + 2*this->h, z);
 }
 
-void Barrel::set_rotation(float x) {
-    this->rotation = x;
-    this->barr.set_rotation(x);
-    this->gift.set_rotation(x);
+void Barrel::set_rotation(float x, float y, float z) {
+    this->rotation = glm::vec3(x, y, z);
+    this->barr.set_rotation(x, y, z);
+    this->gift.set_rotation(x, y, z);
 }
 
-void Barrel::update_rotation(float x) {
-    this->rotation += x;
-    this->barr.update_rotation(x);
-    this->gift.update_rotation(x);
+void Barrel::update_rotation(float x, float y, float z) {
+    this->rotation += glm::vec3(x, y, z);
+    this->barr.update_rotation(x, y, z);
+    this->gift.update_rotation(x, y, z);
 }
 
 void Barrel::update_position(float x, float y, float z) {

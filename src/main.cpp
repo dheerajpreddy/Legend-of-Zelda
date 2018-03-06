@@ -75,7 +75,7 @@ void tick_elements() {
     // Collission detection with rocks
     for(int i=0; i<100; i++) {
       if (detect_collision(boat.bounding_box(), rocks[i].bounding_box())) {
-        boat.update_position(2*cos(boat.rotation*M_PI / 180.0f), 0, -2*sin(boat.rotation*M_PI / 180.0f));
+        boat.update_position(2*cos(boat.rotation.y*M_PI / 180.0f), 0, -2*sin(boat.rotation.y*M_PI / 180.0f));
         boat.update_health(-1);
       }
       if (detect_collision(boat.bounding_box(), barrels[i].bounding_box())) {

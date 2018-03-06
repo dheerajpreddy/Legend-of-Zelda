@@ -6,7 +6,7 @@ unsigned long long bouncer2 = 3;
 
 Monster::Monster(float x, float y, float z, float scale, int type, color_t color) {
     this->set_position(x, y, z);
-    this->set_rotation(0);
+    this->set_rotation(0, 0, 0);
     this->set_speed(0, 0, 0);
     this->set_health(100);
     this->l = 3*scale, this->b=3*scale, this->h=3*scale;
@@ -49,20 +49,20 @@ void Monster::set_position(float x, float y, float z) {
   this->top.set_position(x, y + 4.5, z);
 }
 
-void Monster::set_rotation(float x) {
-    this->rotation = x;
-    this->center.set_rotation(x);
-    this->left.set_rotation(x);
-    this->right.set_rotation(x);
-    this->top.set_rotation(x);
+void Monster::set_rotation(float x, float y, float z) {
+    this->rotation = glm::vec3(x, y, z);
+    this->center.set_rotation(x, y, z);
+    this->left.set_rotation(x, y, z);
+    this->right.set_rotation(x, y, z);
+    this->top.set_rotation(x, y, z);
 }
 
-void Monster::update_rotation(float x) {
-    this->rotation += x;
-    this->center.update_rotation(x);
-    this->left.update_rotation(x);
-    this->right.update_rotation(x);
-    this->top.update_rotation(x);
+void Monster::update_rotation(float x, float y, float z) {
+    this->rotation += glm::vec3(x, y, z);
+    this->center.update_rotation(x, y, z);
+    this->left.update_rotation(x, y, z);
+    this->right.update_rotation(x, y, z);
+    this->top.update_rotation(x, y, z);
 }
 
 void Monster::update_health(long long x) {

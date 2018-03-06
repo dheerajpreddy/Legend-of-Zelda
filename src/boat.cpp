@@ -11,15 +11,16 @@ float randomGen2(float min, float max) {
 
 Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) {
     this->set_position(x, y, z);
-    this->set_rotation(0);
+    this->set_rotation(0, 0, 0);
     this->set_speed(0, 0, 0);
     this->set_health(100);
     this->l = l;
     this->b = b;
     this->h = h;
     this->base = Cuboid(x, y, z, l, b, h, color);
+    this->cannon = Cuboid(x, y + 2, z, 3, 0.15, 0.15, COLOR_BLACK);
     this->sail = Sail(x, y+ 2, z, 5, 4, 0.2, COLOR_WHITE);
-    this->sail.set_rotation(this->rotation + 90);
+    this->sail.set_rotation(this->rotation.y + 90);
     this->counter = 0;
     this->wind = 0;
 }
@@ -27,34 +28,40 @@ Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) 
 void Boat::draw(glm::mat4 VP) {
   this->sail.draw(VP);
   this->base.draw(VP);
+  this->cannon.draw(VP);
 }
 
 void Boat::set_speed(float x, float y, float z) {
   this->speed = glm::vec3(x, y, z);
   this->base.set_speed(x, y, z);
   this->sail.set_speed(x, y, z);
+  this->cannon.set_speed(x, y, z);
 }
 
 void Boat::update_speed(float x, float y, float z) {
   this->speed += glm::vec3(x, y, z);
   this->base.update_speed(x, y, z);
   this->sail.update_speed(x, y, z);
+  this->cannon.update_speed(x, y, z);
 }
 
 void Boat::set_position(float x, float y, float z) {
     this->position = glm::vec3(x, y, z);
     this->base.set_position(x, y, z);
     this->sail.set_position(x, y+ 2, z);
+    this->cannon.set_position(x, y+ 2, z);
 }
 
-void Boat::set_rotation(float x) {
-    this->rotation = x;
-    this->base.set_rotation(x);
+void Boat::set_rotation(float x, float y, float z) {
+    this->rotation = glm::vec3(x, y, z);
+    this->base.set_rotation(x, y, z);
+    this->cannon.set_rotation(x, y, this->rotation.z-30);
 }
 
-void Boat::update_rotation(float x) {
-    this->rotation += x;
-    this->base.update_rotation(x);
+void Boat::update_rotation(float x, float y, float z) {
+    this->rotation += glm::vec3(x, y, z);
+    this->base.update_rotation(x, y, z);
+    this->base.update_rotation(x, y, 0);
 }
 
 void Boat::update_health(long long x) {
@@ -65,11 +72,11 @@ void Boat::set_health(long long x) {
     this->health =x;
 }
 
-
 void Boat::update_position(float x, float y, float z) {
     this->position += glm::vec3(x, y, z);
     this->base.update_position(x, y, z);
     this->sail.update_position(x, y, z);
+    this->cannon.update_position(x, y, z);
 }
 
 void Boat::tick() {
@@ -79,24 +86,27 @@ void Boat::tick() {
     this->position.z += this->speed.z;
     this->position = this->base.position;
     this->rotation = this->base.rotation;
+    this->cannon.position = this->base.position + glm::vec3(0, 1.5, 0);
+    this->cannon.set_rotation(this->base.rotation.x, this->base.rotation.y, -30);
     this->sail.position = this->base.position + glm::vec3(0, 2.5, 0);
     this->windHandler();
     this->base.tick();
     this->sail.tick();
+    this->cannon.tick();
 }
 
 void Boat::move(GLFWwindow *window) {
   int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE);
   if (up) {
-    this->update_position(-0.1*cos(this->rotation*M_PI/180.0f), 0, 0.1*sin(this->rotation * M_PI / 180.0f));
+    this->update_position(-0.1*cos(this->rotation.y*M_PI/180.0f), 0, 0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
   else if (down) {
-    this->update_position(0.1*cos(this->rotation*M_PI/180.0f), 0, -0.1*sin(this->rotation * M_PI / 180.0f));
+    this->update_position(0.1*cos(this->rotation.y*M_PI/180.0f), 0, -0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
   if (left) {
-    this->update_rotation(1.0);
+    this->update_rotation(0, 1.0, 0);
   } else if (right) {
-    this->update_rotation(-1.0);
+    this->update_rotation(0, -1.0, 0);
   }
   if (space && this->position.y < 3.15) {
     this->update_position(0, 7.0, 0);
@@ -115,7 +125,7 @@ void Boat::windHandler() {
   }
   // Changing rotation of sail and position of boat based on wind
   if (this->wind == 0) {                                     // No wind, default
-    this->sail.set_rotation(this->rotation+90);              // Sail is always perpendicular to boat
+    this->sail.set_rotation(this->rotation.y+90);              // Sail is always perpendicular to boat
   } else if (this->wind == 1 || this->wind == 2) {
     // Sail rotation
     if(this->sail.rotation < 90) {

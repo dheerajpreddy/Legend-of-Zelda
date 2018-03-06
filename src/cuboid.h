@@ -11,15 +11,16 @@ public:
     float l, b, h;
     glm::vec3 position;
     glm::vec3 speed;
-    float rotation;
+    glm::vec3 rotation;
     void draw(glm::mat4 VP);
     void set_position(float x, float y, float z);
     void update_position(float x, float y, float z);
-    void set_rotation(float x);
-    void update_rotation(float x);
+    void set_rotation(float x, float y, float z);
+    void update_rotation(float x, float y, float z);
     void set_speed(float x, float y, float z);
     void update_speed(float x, float y, float z);
     void move(GLFWwindow *window);
+    void shoot(float x);
     bounding_box_t bounding_box();
     void tick();
 private:
