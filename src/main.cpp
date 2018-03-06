@@ -16,12 +16,13 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
-Cuboid ocean, rocks[100], healthPoints[100], gifts[10];
+Cuboid ocean, rocks[100], healthPoints[100], gifts[10], booster;
 Monster m[50], boss, mo;
 Boat boat;
 Barrel barrels[100];
 extern bool bossFlag;
-
+bool isBoost = false;
+unsigned long long cccounter = 0;
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 Camera cam;
@@ -65,6 +66,7 @@ void draw() {
     }
     // mo.draw(VP);
     boss.draw(VP);
+    booster.draw(VP);
 }
 
 void updateTitle() {
@@ -74,11 +76,19 @@ void updateTitle() {
 }
 
 void tick_input(GLFWwindow *window) {
-    boat.move(window);                 // Moves boat
+  if(isBoost && cccounter<500){
+    cccounter++;
+    boat.move(window, 10.0);
+  } else {
+    boat.move(window, 1.0);
+    isBoost = false;
+    cccounter = 0;
+  }
     cam.update(boat, camView);  // Updates camera based on camView
 }
 
 void tick_elements() {
+  booster.tick();
     ocean.tick();
     boat.tick();
 
@@ -126,7 +136,7 @@ void tick_elements() {
         if(m[i].health <= 0) {
           for(int j=0; j<10; j++) {
             gifts[j].set_position(randomGen(m[i].position.x-0.25, m[i].position.x+0.25), 2.0, randomGen(m[i].position.y-0.25, m[i].position.y+0.25));
-            cout<<gifts[j].position.x<<" "<<gifts[j].position.y<<" "<<gifts[j].position.z<<endl;
+            // cout<<gifts[j].position.x<<" "<<gifts[j].position.y<<" "<<gifts[j].position.z<<endl;
           }
         }
       }
@@ -149,6 +159,8 @@ void tick_elements() {
     if (bossFlag && detect_collision(boat.fireball.bounding_box(), boss.bounding_box())) {
       boss.health -= 3;
       if(boss.health<=0) {
+        booster.set_position(boss.position.x, 2.0, boss.position.z);
+        cout<<booster.position.x<<" "<<booster.position.y<<" "<<booster.position.z<<endl;
         boss.set_position(-10, -100, -10);
         bossFlag = false;
         deathCount++;
@@ -156,8 +168,13 @@ void tick_elements() {
     }
     if(deathCount%3==0 && deathCount!=0 && !bossFlag) {
       boss.set_position(randomGen(boat.position.x-50, boat.position.x+50), 10, randomGen(boat.position.z-50, boat.position.z+50));
+      cout<<boss.position.x<<" "<<boss.position.y<<" "<<boss.position.z<<endl;
       boss.set_health(200);
       bossFlag = true;
+    }
+    if(detect_collision(boat.bounding_box(), booster.bounding_box())) {
+      isBoost = true;
+      booster.set_position(-10, -10, -10);
     }
     boss.tick();
     // Updating title bar
@@ -170,6 +187,7 @@ void tick_elements() {
 void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
+    isBoost = false;
     deathCount = 0;
     glm::vec3 eye ( 10, 7, 0 ), target (0, 0, 0), up (0, 1, 0);
     cam = Camera(eye, target, up);
@@ -193,6 +211,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     boss = Monster(-10, -100, -10, 2.0, 69, COLOR_BLACK);
     bossFlag = false;
     mo = Monster(-1, 2.5, -3, 1.0, 1, COLOR_BOOSTER);
+    booster = Cuboid(-2, -2, -2, 2, 2, 2, COLOR_BOOSTER);
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform

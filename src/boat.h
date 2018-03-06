@@ -16,7 +16,7 @@ public:
     glm::vec3 position;
     glm::vec3 speed;
     int wind;
-    unsigned long long counter;
+    unsigned long long counter, initCount;
     long long health;
     glm::vec3 rotation;
     void draw(glm::mat4 VP);
@@ -31,7 +31,7 @@ public:
     void tick();
     void windHandler();
     bounding_box_t bounding_box();
-    void move(GLFWwindow *window);
+    void move(GLFWwindow *window, float scale);
 private:
     VAO *object;
 };

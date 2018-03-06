@@ -4,7 +4,6 @@
 #include "main.h"
 
 unsigned long long bouncer = 0;
-
 float randomGen2(float min, float max) {
   return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
 }
@@ -109,13 +108,13 @@ void Boat::tick() {
     this->fireball.tick();
 }
 
-void Boat::move(GLFWwindow *window) {
+void Boat::move(GLFWwindow *window, float scale) {
   int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE), a = glfwGetKey(window, GLFW_KEY_A);
   if (up) {
-    this->update_position(-0.1*cos(this->rotation.y*M_PI/180.0f), 0, 0.1*sin(this->rotation.y * M_PI / 180.0f));
+    this->update_position(scale*-0.1*cos(this->rotation.y*M_PI/180.0f), 0, scale*0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
   else if (down) {
-    this->update_position(0.1*cos(this->rotation.y*M_PI/180.0f), 0, -0.1*sin(this->rotation.y * M_PI / 180.0f));
+    this->update_position(scale*0.1*cos(this->rotation.y*M_PI/180.0f), 0, scale*-0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
   if (left) {
     this->update_rotation(0, 1.0, 0);
