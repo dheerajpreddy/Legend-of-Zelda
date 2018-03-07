@@ -2,11 +2,14 @@
 #include "boat.h"
 #include "sail.h"
 #include "main.h"
+#include "camera.h"
 
 unsigned long long bouncer = 0;
 float randomGen2(float min, float max) {
   return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
 }
+Camera cam;
+extern int camView;
 
 Boat::Boat(float x, float y, float z, float l, float b, float h, color_t color) {
     this->set_position(x, y, z);
@@ -98,6 +101,8 @@ void Boat::tick() {
     if (this->fireball.position.y > -1 && this->fireball.speed.y != 0) {
       this->fireball.speed.y -= 0.1;
     } else {
+      // if(this->fireball.position != this->position)
+      // std::cout<<this->fireball.position.x<<" "<<this->fireball.position.y<<" "<<this->fireball.position.z<<" \n";
       this->fireball.set_position(this->position.x, this->position.y, this->position.z);
       this->fireball.set_speed(0, 0, 0);
     }
@@ -109,7 +114,8 @@ void Boat::tick() {
 }
 
 void Boat::move(GLFWwindow *window, float scale) {
-  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE), a = glfwGetKey(window, GLFW_KEY_A);
+  int left  = glfwGetKey(window, GLFW_KEY_LEFT), right = glfwGetKey(window, GLFW_KEY_RIGHT), up = glfwGetKey(window, GLFW_KEY_UP), down = glfwGetKey(window, GLFW_KEY_DOWN), space = glfwGetKey(window, GLFW_KEY_SPACE), a = glfwGetKey(window, GLFW_KEY_A), c = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+  // double cursor_x, cursor_y;
   if (up) {
     this->update_position(scale*-0.1*cos(this->rotation.y*M_PI/180.0f), 0, scale*0.1*sin(this->rotation.y * M_PI / 180.0f));
   }
@@ -127,9 +133,36 @@ void Boat::move(GLFWwindow *window, float scale) {
   if (this->position.y > 3.15) {
     this->update_position(0, -0.15, 0);
   }
-  if (a && this->fireball.position == this->position) {
+  if ( a && this->fireball.position == this->position) {
     this->wind = 0;
     this->fireball.shoot(this->rotation.y, 1.5);
+  }
+   if(glfwGetKey(window, GLFW_KEY_F)) {
+    // camView = 1;
+      // cam.set_up(0, 1, 0);
+      // cam.set_target(this->position.x - 10*cos(this->rotation.y * M_PI / 180.0f), this->position.y + 0.5, this->position.z + 10*sin(this->rotation.y * M_PI / 180.0f));
+      // cam.set_eye(this->position.x - 4*cos(this->rotation.y * M_PI / 180.0f), this->position.y , this->position.z + 4*sin(this->rotation.y * M_PI / 180.0f));
+    double cursor_x1, cursor_y1;
+    glfwGetCursorPos(window, &cursor_x1, &cursor_y1);
+    // std::cout<<cursor_x1<<cursor_y1<<std::endl;
+    this->wind = 0;
+    cursor_x1 -= 840;
+    cursor_y1 -= 524;
+    // std::cout<<cursor_x1<<" "<<cursor_y1<<std::endl;
+
+    cam.update_target(0, cursor_y1/100, -cursor_x1/100);
+    float x_dist = cam.target.x - cam.eye.x;
+    float z_dist = cam.target.z - cam.eye.z;
+    // std::cout<<atan2(z_dist,x_dist)<<std::endl;
+    float theta = 180 - atan2(z_dist,x_dist)*180.0f/M_PI;
+    std::cout<<theta<<std::endl;
+    int mouse_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    if (mouse_left && this->position.x == this->fireball.position.x) {
+      // std::cout<<1;
+      this->fireball.set_position(cam.eye.x, cam.eye.y, cam.eye.z);
+      cursor_y1 += 524;
+      this->fireball.shoot(theta, 1.5);
+    }
   }
   this->base.move(window);
   // this->sail.move(window);
@@ -140,10 +173,9 @@ void Boat::windHandler() {
   if ((this->counter++) % 500 == 0) {
       this->wind = (int)randomGen2(0, 4);
   }
-  // Changing rotation of sail and position of boat based on wind
+  // Changing rotation of sail and position of this->based on wind
   if (this->wind == 0) {                                     // No wind, default
-    this->sail.set_rotation(this->rotation.y+90);              // Sail is always perpendicular to boat
-  } else if (this->wind == 1 || this->wind == 2) {
+    this->sail.set_rotation(this->rotation.y+90);              // Sail is always perpendicular to this->  } else if (this->wind == 1 || this->wind == 2) {
     // Sail rotation
     if(this->sail.rotation < 90) {
       this->sail.update_rotation(1);

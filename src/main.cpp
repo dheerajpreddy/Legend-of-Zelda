@@ -25,7 +25,7 @@ bool isBoost = false;
 unsigned long long cccounter = 0;
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
-Camera cam;
+extern Camera cam;
 Timer t60(1.0 / 60);
 
 // Declaring camera angle views
@@ -84,10 +84,13 @@ void tick_input(GLFWwindow *window) {
     isBoost = false;
     cccounter = 0;
   }
-    cam.update(boat, camView);  // Updates camera based on camView
+    cam.update(window, boat, camView);  // Updates camera based on camView
 }
 
 void tick_elements() {
+  // double c1, c2;
+  // glfwGetCursorPos(window, &c1, &c2);
+  // std::cout<<c1<<" "<<c2<<std::endl;
   booster.tick();
     ocean.tick();
     boat.tick();
@@ -236,8 +239,8 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 int main(int argc, char **argv) {
     srand(time(0));
-    int width  = 900;
-    int height = 900;
+    int width  = 1920;
+    int height = 1080;
 
     window = initGLFW(width, height);
 
@@ -277,5 +280,5 @@ void reset_screen() {
     float left   = screen_center_x - 4 / screen_zoom;
     float right  = screen_center_x + 4 / screen_zoom;
     // Matrices.projection = glm::ortho(left, right, bottom, top, 0.1f, 500.0f);
-    Matrices.projection = glm::perspective(1.57f, (float)(900/900), 0.01f, 500.0f);
+    Matrices.projection = glm::perspective(1.57f, (float)(1920/1080), 0.01f, 500.0f);
 }

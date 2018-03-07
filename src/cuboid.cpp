@@ -67,7 +67,7 @@ void Cuboid::draw(glm::mat4 VP) {
 }
 
 void Cuboid::shoot(float x, float p) {
-  this->set_speed(p*cos(x * M_PI / 180.0f), p, p*sin(x * M_PI / 180.0f));
+  this->set_speed(-p*cos(x * M_PI / 180.0f), p, p*sin(x * M_PI / 180.0f));
 }
 
 void Cuboid::set_speed(float x, float y, float z) {
@@ -96,7 +96,7 @@ void Cuboid::update_position(float x, float y, float z) {
 
 void Cuboid::tick() {
     // this->rotation += speed;
-    this->position.x -= this->speed.x;
+    this->position.x += this->speed.x;
     this->position.y += this->speed.y;
     this->position.z += this->speed.z;
 }

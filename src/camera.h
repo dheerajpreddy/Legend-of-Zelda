@@ -17,7 +17,7 @@ public:
     void update_eye(float x, float y, float z);
     void update_target(float x, float y, float z);
     void update_up(float x, float y, float z);
-    void update(Boat boat, int camView);
+    void update(GLFWwindow *window, Boat boat, int camView);
 private:
     VAO *object;
 };

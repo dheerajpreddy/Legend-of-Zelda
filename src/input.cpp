@@ -13,6 +13,7 @@
 
 #include "main.h"
 
+extern int old_view;
 bool   cannon_keyboard_input = true;
 bool   drag_pan = false, old_cki;
 double drag_oldx = -1, drag_oldy = -1;
@@ -29,6 +30,9 @@ void keyboard(GLFWwindow *window, int key, int scancode, int action, int mods) {
           case GLFW_KEY_C:
             camView = (camView+1)%5;
         break;
+          case GLFW_KEY_F:
+          camView = old_view;
+        break;
         // case GLFW_KEY_P:
         // triangle_rot_status = !triangle_rot_status;
         // break;
@@ -42,6 +46,9 @@ void keyboard(GLFWwindow *window, int key, int scancode, int action, int mods) {
         switch (key) {
         case GLFW_KEY_ESCAPE:
             quit(window);
+            break;
+        case GLFW_KEY_F:
+            camView = 1;
             break;
         default:
             break;
