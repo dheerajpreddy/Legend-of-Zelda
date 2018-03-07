@@ -27,6 +27,13 @@ float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 extern Camera cam;
 Timer t60(1.0 / 60);
+ao_device *device;
+ao_sample_format format;
+int default_driver;
+char *bufferN, *bufferH, *bufferL;
+int buf_size, sounder;
+int sampleN, sampleH, sampleL;
+float freq = 440.0;
 
 // Declaring camera angle views
 extern int camView;
@@ -100,14 +107,23 @@ void tick_elements() {
       if (detect_collision(boat.bounding_box(), rocks[i].bounding_box())) {
         boat.update_position(2*cos(boat.rotation.y*M_PI / 180.0f), 0, -2*sin(boat.rotation.y*M_PI / 180.0f));
         boat.update_health(-1);
+        for(int j=0; j<1000; j++){
+          ao_play(device, bufferL + (j)%buf_size, 1);
+        }
       }
       if (detect_collision(boat.bounding_box(), barrels[i].bounding_box())) {
         barrels[i].set_position(randomGen(-500, 500), 2.5, randomGen(-500, 500));
         score+= barrels[i].gift_val;
+        for(int j=0; j<1000; j++){
+          ao_play(device, bufferH + (j)%buf_size, 1);
+        }
       }
       if (detect_collision(boat.bounding_box(), healthPoints[i].bounding_box())) {
         healthPoints[i].set_position(randomGen(-500, 500), 2.5, randomGen(-500, 500));
         boat.update_health((int)randomGen(2, 10));
+        for(int j=0; j<1000; j++){
+          ao_play(device, bufferH + (j)%buf_size, 1);
+        }
       }
       healthPoints[i].tick();
       rocks[i].tick();
@@ -241,15 +257,52 @@ int main(int argc, char **argv) {
     srand(time(0));
     int width  = 1920;
     int height = 1080;
-
+    ao_initialize();
+    default_driver = ao_default_driver_id();
+    memset(&format, 0, sizeof(format));
+    format.bits = 16;
+    format.channels = 2;
+    format.rate = 44100;
+    format.byte_format = AO_FMT_LITTLE;
+    device = ao_open_live(default_driver, &format, NULL /* no options */);
+    if (device == NULL) {
+  		fprintf(stderr, "Error opening device.\n");
+  		return 1;
+  	}
     window = initGLFW(width, height);
+    buf_size = format.bits/8 * format.channels * format.rate;
+    bufferN = (char*)calloc(buf_size,
+        sizeof(char));
+    bufferH = (char*)calloc(buf_size,
+        sizeof(char));
+    bufferL = (char*)calloc(buf_size,
+        sizeof(char));
 
+    for (int i = 0; i < format.rate; i++) {
+      sampleN = (int)(0.45 * 32768.0 *
+        sin(2 * M_PI * freq * ((float) i/format.rate)));
+      sampleH = (int)(0.75 * 32768.0 *
+        sin(2 * M_PI * freq*2 * ((float) i/format.rate)));
+      sampleL = (int)(0.75 * 32768.0 *
+        sin(2 * M_PI * freq*(0.5) * ((float) i/format.rate)));
+
+      /* Put the same stuff in left and right channel */
+      bufferN[4*i] = bufferN[4*i+2] = sampleN & 0xff;
+      bufferN[4*i+1] = bufferN[4*i+3] = (sampleN >> 8) & 0xff;
+
+      bufferH[4*i] = bufferH[4*i+2] = sampleH & 0xff;
+      bufferH[4*i+1] = bufferH[4*i+3] = (sampleH >> 8) & 0xff;
+
+      bufferL[4*i] = bufferL[4*i+2] = sampleL & 0xff;
+      bufferL[4*i+1] = bufferL[4*i+3] = (sampleL >> 8) & 0xff;
+    }
     initGL (window, width, height);
-
+    sounder=0;
     /* Draw in loop */
     while (!glfwWindowShouldClose(window)) {
         // Process timers
-
+        // sounder++;
+	    ao_play(device, bufferN + (sounder++)%buf_size, 1);
         if (t60.processTick()) {
             // 60 fps
             // OpenGL Draw commands
@@ -264,7 +317,9 @@ int main(int argc, char **argv) {
         // Poll for Keyboard and mouse events
         glfwPollEvents();
     }
+    ao_close(device);
 
+	  ao_shutdown();
     quit(window);
 }
 

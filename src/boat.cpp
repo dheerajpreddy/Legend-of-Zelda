@@ -151,6 +151,7 @@ void Boat::move(GLFWwindow *window, float scale) {
     // std::cout<<cursor_x1<<" "<<cursor_y1<<std::endl;
 
     cam.update_target(0, cursor_y1/100, -cursor_x1/100);
+    // cam.update(window, *this, camView);
     float x_dist = cam.target.x - cam.eye.x;
     float z_dist = cam.target.z - cam.eye.z;
     // std::cout<<atan2(z_dist,x_dist)<<std::endl;
@@ -161,7 +162,7 @@ void Boat::move(GLFWwindow *window, float scale) {
       // std::cout<<1;
       this->fireball.set_position(cam.eye.x, cam.eye.y, cam.eye.z);
       cursor_y1 += 524;
-      this->fireball.shoot(theta, 1.5);
+      this->fireball.shoot(theta, cursor_y1/300);
     }
   }
   this->base.move(window);
