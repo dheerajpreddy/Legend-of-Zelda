@@ -22,7 +22,7 @@ Boat boat;
 Barrel barrels[100];
 extern bool bossFlag;
 bool isBoost = false;
-unsigned long long cccounter = 0;
+unsigned long long cccounter = 0, back_counter = 0;
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 extern Camera cam;
@@ -92,6 +92,32 @@ void tick_input(GLFWwindow *window) {
     cccounter = 0;
   }
     cam.update(window, boat, camView);  // Updates camera based on camView
+}
+
+void updateBackground() {
+  color_t blue = { 185, 245, 246 }, brown = { 0, 16, 133 };
+  if (((back_counter++)/800)%2 == 0) {
+    if(COLOR_BACKGROUND.r != brown.r) {
+      COLOR_BACKGROUND.r--;
+    }
+    if(COLOR_BACKGROUND.g != brown.g) {
+      COLOR_BACKGROUND.g--;
+    }
+    if(COLOR_BACKGROUND.b != brown.b) {
+      COLOR_BACKGROUND.b--;
+    }
+  } else {
+    if(COLOR_BACKGROUND.r != blue.r) {
+      COLOR_BACKGROUND.r++;
+    }
+    if(COLOR_BACKGROUND.g != blue.g) {
+      COLOR_BACKGROUND.g++;
+    }
+    if(COLOR_BACKGROUND.b != blue.b) {
+      COLOR_BACKGROUND.b++;
+    }
+  }
+  glClearColor (COLOR_BACKGROUND.r / 256.0, COLOR_BACKGROUND.g / 256.0, COLOR_BACKGROUND.b / 256.0, 0.0f);
 }
 
 void tick_elements() {
@@ -198,7 +224,7 @@ void tick_elements() {
     boss.tick();
     // Updating title bar
     updateTitle();
-
+    updateBackground();
 }
 
 /* Initialize the OpenGL rendering properties */
