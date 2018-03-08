@@ -160,35 +160,21 @@ void Boat::move(GLFWwindow *window, float scale) {
     this->fireball.shoot(this->rotation.y, 1.5);
   }
    if(glfwGetKey(window, GLFW_KEY_F)) {
-    // camView = 1;
-      // cam.set_up(0, 1, 0);
-      // cam.set_target(this->position.x - 10*cos(this->rotation.y * M_PI / 180.0f), this->position.y + 0.5, this->position.z + 10*sin(this->rotation.y * M_PI / 180.0f));
-      // cam.set_eye(this->position.x - 4*cos(this->rotation.y * M_PI / 180.0f), this->position.y , this->position.z + 4*sin(this->rotation.y * M_PI / 180.0f));
     double cursor_x1, cursor_y1;
     glfwGetCursorPos(window, &cursor_x1, &cursor_y1);
-    // std::cout<<cursor_x1<<cursor_y1<<std::endl;
     this->wind = 0;
     cursor_x1 -= 840;
-    cursor_y1 -= 524;
-    // std::cout<<cursor_x1<<" "<<cursor_y1<<std::endl;
-
     cam.update_target(0, cursor_y1/100, -cursor_x1/100);
-    // cam.update(window, *this, camView);
     float x_dist = cam.target.x - cam.eye.x;
     float z_dist = cam.target.z - cam.eye.z;
-    // std::cout<<atan2(z_dist,x_dist)<<std::endl;
     float theta = 180 - atan2(z_dist,x_dist)*180.0f/M_PI;
-    std::cout<<theta<<std::endl;
     int mouse_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
     if (mouse_left && this->position.x == this->fireball.position.x) {
-      // std::cout<<1;
       this->fireball.set_position(cam.eye.x, cam.eye.y, cam.eye.z);
-      cursor_y1 += 524;
       this->fireball.shoot(theta, cursor_y1/300);
     }
   }
   this->base.move(window);
-  // this->sail.move(window);
 }
 
 void Boat::windHandler() {

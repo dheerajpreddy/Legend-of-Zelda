@@ -12,12 +12,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "main.h"
+#include "camera.h"
 
 extern int old_view;
 bool   cannon_keyboard_input = true;
 bool   drag_pan = false, old_cki;
 double drag_oldx = -1, drag_oldy = -1;
 int camView;
+extern Camera cam;
 using namespace std;
 
 /* Executed when a regular key is pressed/released/held-down */
@@ -77,6 +79,11 @@ void mouseButton(GLFWwindow *window, int button, int action, int mods) {
             return;
         } else if (action == GLFW_RELEASE) {
             // Do something
+            if(camView == 4){
+              double cursor_x1, cursor_y1;
+              glfwGetCursorPos(window, &cursor_x1, &cursor_y1);
+              cam.update_target(cam.target.x, cursor_y1/100, cursor_x1/100);
+            }
         }
         break;
     // case GLFW_MOUSE_BUTTON_RIGHT:
@@ -91,4 +98,8 @@ void mouseButton(GLFWwindow *window, int button, int action, int mods) {
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     // Do something
+    if(camView==4) {
+      cam.update_eye(0, -(yoffset), 0);
+      reset_screen();
+    }
 }

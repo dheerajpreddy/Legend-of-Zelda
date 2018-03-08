@@ -52,35 +52,17 @@ void Camera::update(GLFWwindow *window, Boat boat, int camView) {
       this->set_target(boat.position.x, this->target.y, boat.position.z);
       this->set_eye(-10, 40, 10);
     } else if (camView == 4) {
-      camView = 1;
+      // Helicopter view
+      // std::cout<<this->target.x<<" "<<this->target.y<<" "<<this->target.z<<"\n";
+      this->set_up(0, 1, 0);
+      this->set_eye(10, this->eye.y, 10);
+      double cursor_x1, cursor_y1;
+      glfwGetCursorPos(window, &cursor_x1, &cursor_y1);
+      int mouse_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+      cursor_x1 -= 960;
+      cursor_y1 -= 504;
+      if (mouse_left) {
+        this->set_target(this->target.x, cursor_y1/100, cursor_x1/100);
+      }
     }
-    double cursor_x, cursor_y;
-
-    // if (!glfwGetKey(window, GLFW_KEY_F)) {
-    //   old_view = camView;
-    // } else {
-    //   // camView = 0;
-    //   // this->set_up(0, 1, 0);
-    //   // this->set_target(boat.position.x - 10*cos(boat.rotation.y * M_PI / 180.0f), boat.position.y + 0.5, boat.position.z + 10*sin(boat.rotation.y * M_PI / 180.0f));
-    //   // this->set_eye(boat.position.x - 4*cos(boat.rotation.y * M_PI / 180.0f), boat.position.y , boat.position.z + 4*sin(boat.rotation.y * M_PI / 180.0f));
-    //
-    //   glfwGetCursorPos(window, &cursor_x, &cursor_y);
-    //   cursor_x -= 840;
-    //   cursor_y -= 524;
-    //   // this->update_target(0, cursor_y/100, -cursor_x/100);
-    //   float x_dist = boat.position.x - 10*cos(boat.rotation.y * M_PI / 180.0f) - boat.position.x - 4*cos(boat.rotation.y * M_PI / 180.0f);
-    //   float z_dist = boat.position.z + 10*sin(boat.rotation.y * M_PI / 180.0f) - boat.position.z + 4*sin(boat.rotation.y * M_PI / 180.0f);
-    //   float theta = 270.0f + atan2(z_dist,x_dist)*180.0f/M_PI;
-    //   // printf("%f\n", theta);
-    //   int mouse_left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-    //   int b = glfwGetKey(window, GLFW_KEY_B);
-    //   if (b) {
-    //     std::cout<<1<<std::endl;
-    //     boat.fireball.set_position(boat.position.x, boat.position.y, boat.position.z);
-    //     cursor_y += 524;
-    //     boat.fireball.shoot(boat.rotation.y, 1.5);
-    //     std::cout<<boat.fireball.position.x<<" "<<boat.fireball.position.y<<" "<<boat.fireball.position.z<<std::endl;
-    //   }
-    // }
-
 }
