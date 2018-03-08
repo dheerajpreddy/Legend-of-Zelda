@@ -74,8 +74,9 @@ void Sail::update_position(float x, float y, float z) {
 
 void Sail::tick() {
     // this->rotation += speed;
-    this->position.x -= this->speed.x;
+    this->position.x += this->speed.x;
     this->position.y += this->speed.y;
+    this->position.z += this->speed.z;
 }
 
 void Sail::move(GLFWwindow *window) {

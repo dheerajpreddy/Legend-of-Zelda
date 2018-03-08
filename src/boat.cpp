@@ -89,8 +89,18 @@ void Boat::update_position(float x, float y, float z) {
 }
 
 void Boat::tick() {
+  if(this->position.y> 2.5 && this->speed.y!=0) {
+    this->update_speed(0, -0.1, 0);
+  } else if(this->position.y<2.5) {
+    this->position.y = 2.5;
+    this->base.position.y = 2.5;
+    this->sail.position.y = 2.5 + 2;
+    this->cannon.position.y = 2.5 + 2;
+    this->fireball.position.y = 2.5;
+    this->set_speed(this->speed.x, 0, this->speed.y);
+  }
     this->update_position(0, 0.05*cos((bouncer++)/8), 0);
-    this->position.x -= this->speed.x;
+    this->position.x += this->speed.x;
     this->position.y += this->speed.y;
     this->position.z += this->speed.z;
     this->position = this->base.position;
@@ -111,6 +121,18 @@ void Boat::tick() {
     this->sail.tick();
     this->cannon.tick();
     this->fireball.tick();
+    // if(this->position.y> 2.5 && this->speed.y!=0) {
+    //   this->update_speed(0, -0.1, 0);
+    // } else if(this->position.y<2.5) {
+    //   this->position.y = 2.5;
+    //   this->base.position.y = 2.5;
+    //   this->sail.position.y = 2.5 + 2;
+    //   this->cannon.position.y = 2.5 + 2;
+    //   this->fireball.position.y = 2.5;
+    //   this->set_speed(this->speed.x, 0, this->speed.y);
+    // } //else if(this->position.y > 2.5) {
+    //   this->update_position(0, -0.1, 0);
+    // }
 }
 
 void Boat::move(GLFWwindow *window, float scale) {
@@ -127,12 +149,12 @@ void Boat::move(GLFWwindow *window, float scale) {
   } else if (right) {
     this->update_rotation(0, -1.0, 0);
   }
-  if (space && this->position.y < 3.15) {
-    this->update_position(0, 7.0, 0);
+  if (space && this->position.y == 2.5) {
+    this->set_speed(0, 2.0, 0);
   }
-  if (this->position.y > 3.15) {
-    this->update_position(0, -0.15, 0);
-  }
+  // if (this->position.y > 3.15) {
+  //   this->update_position(0, -0.15, 0);
+  // }
   if ( a && this->fireball.position == this->position) {
     this->wind = 0;
     this->fireball.shoot(this->rotation.y, 1.5);
